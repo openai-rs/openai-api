@@ -6,28 +6,31 @@ use serde::{Deserialize, Serialize};
 
 use super::MODELS_API;
 
+/// List and describe the various models available in the API.
+/// You can refer to the [Models](https://platform.openai.com/docs/models) documentation
+/// to understand what models are available and the differences between them.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Model {
-    id: String,
-    object: Option<String>,
-    owned_by: Option<String>,
-    permission: Vec<Permission>,
+    pub id: String,
+    pub object: Option<String>,
+    pub owned_by: Option<String>,
+    pub permission: Vec<Permission>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Permission {
-    id: String,
-    object: Option<String>,
-    created: u64,
-    allow_create_engine: bool,
-    allow_sampling: bool,
-    allow_logprobs: bool,
-    allow_search_indices: bool,
-    allow_view: bool,
-    allow_fine_tuning: bool,
-    organization: Option<String>,
-    group: Option<String>,
-    is_blocking: bool,
+pub struct Permission {
+    pub id: String,
+    pub object: Option<String>,
+    pub created: u64,
+    pub allow_create_engine: bool,
+    pub allow_sampling: bool,
+    pub allow_logprobs: bool,
+    pub allow_search_indices: bool,
+    pub allow_view: bool,
+    pub allow_fine_tuning: bool,
+    pub organization: Option<String>,
+    pub group: Option<String>,
+    pub is_blocking: bool,
 }
 
 pub trait ModelApi {
