@@ -1,3 +1,8 @@
+/// List and describe the various models available in the API.
+/// You can refer to the Models documentation to understand
+/// what models are available and the differences between them.
+/// See: https://platform.openai.com/docs/api-reference/models
+
 use crate::{
     openai::OpenAI,
     requests::{ApiResult, Error, Json, Requests},
@@ -35,7 +40,11 @@ pub struct Permission {
 }
 
 pub trait ModelApi {
+    /// Lists the currently available models, 
+    /// and provides basic information about each one such as the owner and availability.
     fn models_list(&self) -> Result<Vec<Model>, Error>;
+    /// Retrieves a model instance, 
+    /// providing basic information about the model such as the owner and permissioning.
     fn models_retrieve(&self, model_id: &str) -> ApiResult<Model>;
 }
 

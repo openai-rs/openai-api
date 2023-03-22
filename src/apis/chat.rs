@@ -1,3 +1,6 @@
+/// Given a chat conversation, the model will return a chat completion response.
+/// See: https://platform.openai.com/docs/api-reference/chat
+
 use std::collections::HashMap;
 
 use crate::{
@@ -80,6 +83,7 @@ pub struct ChatBody {
 }
 
 pub trait ChatApi {
+    /// Creates a completion for the chat message
     fn chat_completion_create(&self, chat_body: &ChatBody) -> ApiResult<Completion>;
 }
 
@@ -88,8 +92,8 @@ impl ChatApi for OpenAI {
         let request_body = serde_json::to_value(chat_body).unwrap();
         let result = self.post(CHAT_COMPLETION_CREATE, request_body);
         let res: Json = result.unwrap();
-        let completions: Completion = serde_json::from_value(res.clone()).unwrap();
-        Ok(completions)
+        let completion: Completion = serde_json::from_value(res.clone()).unwrap();
+        Ok(completion)
     }
 }
 

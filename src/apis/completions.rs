@@ -1,3 +1,7 @@
+/// Given a prompt, the model will return one or more predicted completions,
+/// and can also return the probabilities of alternative tokens at each position.
+/// See: https://platform.openai.com/docs/api-reference/completions
+
 use std::collections::HashMap;
 
 use crate::{
@@ -12,7 +16,7 @@ use super::COMPLETION_CREATE;
 /// and can also return the probabilities of alternative tokens at each position.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Completion {
-    pub id: String,
+    pub id: Option<String>,
     pub object: Option<String>,
     pub created: u64,
     pub model: Option<String>,
@@ -147,6 +151,7 @@ pub struct Usage {
 }
 
 pub trait CompletionApi {
+    /// Creates a completion for the provided prompt and parameters
     fn completion_create(&self, completions_body: &CompletionBody) -> ApiResult<Completion>;
 }
 
@@ -155,8 +160,8 @@ impl CompletionApi for OpenAI {
         let request_body = serde_json::to_value(completions_body).unwrap();
         let result = self.post(COMPLETION_CREATE, request_body);
         let res: Json = result.unwrap();
-        let completions: Completion = serde_json::from_value(res.clone()).unwrap();
-        Ok(completions)
+        let completion: Completion = serde_json::from_value(res.clone()).unwrap();
+        Ok(completion)
     }
 }
 

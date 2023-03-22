@@ -2,6 +2,12 @@ use std::collections::HashMap;
 
 use crate::openai::OpenAI;
 
+#[cfg(not(test))]
+use log::{error, info};
+
+#[cfg(test)]
+use std::{println as info, println as error};
+
 pub type Json = serde_json::Value;
 pub type ApiResult<T> = Result<T, Error>;
 
@@ -21,8 +27,7 @@ impl Requests for OpenAI {
         let mut headers = HashMap::new();
         headers.insert("Authorization", &format!("Bearer {}", self.auth.api_key));
 
-        log::info!("=== 🚀 Post url: {:?}, body: {body}", sub_url);
-        println!("=== 🚀 Post url: {:?}, body: {body}", sub_url);
+        info!("===> 🚀 Post api: {sub_url}, body: {body}");
 
         let response = self
             .agent
@@ -36,8 +41,15 @@ impl Requests for OpenAI {
             .send_json(body);
 
         match response {
-            Ok(resp) => Ok(resp.into_json::<Json>().unwrap()),
-            Err(err) => Err(Error::RequestError(err.to_string())),
+            Ok(resp) => {
+                let json = resp.into_json::<Json>();
+                info!("<== ✔️\n\tDone api: {sub_url}, resp: {:?}", json);
+                Ok(json.unwrap())
+            }
+            Err(err) => {
+                error!("<== ❌\n\tError api: {sub_url}, info: {err}");
+                Err(Error::RequestError(err.to_string()))
+            }
         }
     }
 
@@ -45,7 +57,7 @@ impl Requests for OpenAI {
         let mut headers = HashMap::new();
         headers.insert("Authorization", &format!("Bearer {}", self.auth.api_key));
 
-        log::info!("=== 🚀 Get url: {:?}", sub_url);
+        info!("===> 🚀 Get api: {sub_url}");
 
         let response = self
             .agent
@@ -59,18 +71,25 @@ impl Requests for OpenAI {
             .call();
 
         match response {
-            Ok(resp) => Ok(resp.into_json::<Json>().unwrap()),
-            Err(err) => Err(Error::RequestError(err.to_string())),
+            Ok(resp) => {
+                let json = resp.into_json::<Json>();
+                info!("<== ✔️\n\tDone api: {sub_url}, resp: {:?}", json);
+                Ok(json.unwrap())
+            }
+            Err(err) => {
+                error!("<== ❌\n\t Error api: {sub_url}, info: {err}");
+                Err(Error::RequestError(err.to_string()))
+            }
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::openai;
     use super::*;
+    use crate::openai;
     use ureq::json;
-    
+
     #[test]
     fn test_post() {
         let openai = openai::new_test_openai();
