@@ -1,12 +1,12 @@
 use serde::{Deserialize, Serialize};
 
+mod audio;
 mod chat;
 mod completions;
 mod edits;
+mod embeddings;
 mod images;
 mod models;
-mod embeddings;
-mod audio;
 
 // Models API
 const MODELS_LIST: &str = "models";
@@ -27,10 +27,9 @@ const EMBEDDINGS_CREATE: &str = "embeddings";
 const AUDIO_TRANSCRIPTION_CREATE: &str = "audio/transcriptions";
 const AUDIO_TRANSLATIONS_CREATE: &str = "audio/translations";
 
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Usage {
-    pub prompt_tokens: Option<u32>,
-    pub completion_tokens: Option<u32>,
-    pub total_tokens: Option<u32>,
+	pub prompt_tokens: Option<u32>,
+	pub completion_tokens: Option<u32>,
+	pub total_tokens: Option<u32>,
 }
