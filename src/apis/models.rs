@@ -6,8 +6,8 @@
 //! Models API
 
 use crate::{
-	openai::OpenAI,
-	requests::{ApiResult, Error, Json, Requests},
+	openai::{Error, OpenAI},
+	requests::{ApiResult, Json, Requests},
 };
 use serde::{Deserialize, Serialize};
 

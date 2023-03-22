@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::openai::OpenAI;
+use crate::openai::{OpenAI, Error};
 use multipart::client::lazy::Multipart;
 
 #[cfg(not(test))]
@@ -11,12 +11,6 @@ use std::{eprintln as error, println as info, println as debug};
 
 pub type Json = serde_json::Value;
 pub type ApiResult<T> = Result<T, Error>;
-
-#[derive(Debug)]
-pub enum Error {
-	ApiError(String),
-	RequestError(String),
-}
 
 pub trait Requests {
 	fn post(&self, sub_url: &str, body: Json) -> ApiResult<Json>;
@@ -90,7 +84,7 @@ fn deal_response(response: Result<ureq::Response, ureq::Error>, sub_url: &str) -
 			ureq::Error::Status(status, response) => {
 				let error_msg = response.into_json::<Json>().unwrap();
 				error!("<== ❌\n\tError api: {sub_url}, status: {status}, error: {error_msg}");
-				return Err(Error::RequestError(error_msg.to_string()));
+				return Err(Error::ApiError(error_msg.to_string()));
 			},
 			ureq::Error::Transport(e) => {
 				error!("<== ❌\n\tError api: {sub_url}, error: {:?}", e.to_string());

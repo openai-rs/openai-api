@@ -47,6 +47,14 @@ impl OpenAI {
 	}
 }
 
+#[derive(Debug)]
+pub enum Error {
+	/// An Error returned by the API
+	ApiError(String),
+	/// An Error not related to the API
+	RequestError(String),
+}
+
 #[cfg(test)]
 pub fn new_test_openai() -> OpenAI {
 	let auth = Auth::from_env().unwrap();
