@@ -1,8 +1,11 @@
+use serde::{Deserialize, Serialize};
+
 mod chat;
 mod completions;
 mod edits;
 mod images;
 mod models;
+mod embeddings;
 
 // Models API
 const MODELS_LIST: &str = "models";
@@ -17,3 +20,13 @@ const EDIT_CREATE: &str = "edits";
 const IMAGES_CREATE: &str = "images/generations";
 const IMAGES_EDIT: &str = "images/edits";
 const IMAGES_VARIATIONS: &str = "images/variations";
+// Embeddings API
+const EMBEDDINGS_CREATE: &str = "embeddings";
+
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Usage {
+    pub prompt_tokens: Option<u32>,
+    pub completion_tokens: Option<u32>,
+    pub total_tokens: Option<u32>,
+}

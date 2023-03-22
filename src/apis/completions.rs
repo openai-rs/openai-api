@@ -12,7 +12,7 @@ use crate::{
 };
 use serde::{Deserialize, Serialize};
 
-use super::COMPLETION_CREATE;
+use super::{Usage, COMPLETION_CREATE};
 
 /// Given a prompt, the model will return one or more predicted completions,
 /// and can also return the probabilities of alternative tokens at each position.
@@ -139,17 +139,8 @@ pub struct Choice {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Message {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub role: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub content: Option<String>
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Usage {
-    pub prompt_tokens: u32,
-    pub completion_tokens: u32,
-    pub total_tokens: u32,
+    pub content: Option<String>,
 }
 
 pub trait CompletionsApi {

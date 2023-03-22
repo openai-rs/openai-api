@@ -47,7 +47,7 @@ pub struct ImagesEditBody {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Image {
+pub struct Images {
     created: u64,
     data: Option<Vec<ImageData>>,
 }
@@ -59,26 +59,26 @@ pub struct ImageData {
 
 pub trait ImagesApi {
     /// Given a prompt and/or an input image, the model will generate a new image.
-    fn image_create(&self, images_body: &ImagesBody) -> ApiResult<Image>;
+    fn image_create(&self, images_body: &ImagesBody) -> ApiResult<Images>;
     /// Creates an edited or extended image given an original image and a prompt.
-    fn image_edit(&self, images_edit_body: ImagesEditBody) -> ApiResult<Image>;
+    fn image_edit(&self, images_edit_body: ImagesEditBody) -> ApiResult<Images>;
     /// Creates a variation of a given image.
-    fn image_variation(&self, images_edit_body: ImagesEditBody) -> ApiResult<Image>;
+    fn image_variation(&self, images_edit_body: ImagesEditBody) -> ApiResult<Images>;
 }
 
 impl ImagesApi for OpenAI {
-    fn image_create(&self, images_body: &ImagesBody) -> ApiResult<Image> {
+    fn image_create(&self, images_body: &ImagesBody) -> ApiResult<Images> {
         if images_body.prompt.is_none() {
             return Err(ApiError("Prompt is required.".to_string()))
         }
         let request_body = serde_json::to_value(images_body).unwrap();
         let result = self.post(IMAGES_CREATE, request_body);
         let res: Json = result.unwrap();
-        let image: Image = serde_json::from_value(res.clone()).unwrap();
-        Ok(image)
+        let images: Images = serde_json::from_value(res.clone()).unwrap();
+        Ok(images)
     }
 
-    fn image_edit(&self, images_edit_body: ImagesEditBody) -> ApiResult<Image> {
+    fn image_edit(&self, images_edit_body: ImagesEditBody) -> ApiResult<Images> {
         if images_edit_body.images_body.prompt.is_none() {
             return Err(ApiError("Prompt is required.".to_string()))
         }
@@ -110,11 +110,11 @@ impl ImagesApi for OpenAI {
 
         let result = self.post_multipart(IMAGES_EDIT, send_data);
         let res: Json = result.unwrap();
-        let image: Image = serde_json::from_value(res.clone()).unwrap();
-        Ok(image)
+        let images: Images = serde_json::from_value(res.clone()).unwrap();
+        Ok(images)
     }
 
-    fn image_variation(&self, images_edit_body: ImagesEditBody) -> ApiResult<Image> {
+    fn image_variation(&self, images_edit_body: ImagesEditBody) -> ApiResult<Images> {
         let mut send_data = Multipart::new();
 
         if let Some(n) = images_edit_body.images_body.n {
@@ -138,8 +138,8 @@ impl ImagesApi for OpenAI {
 
         let result = self.post_multipart(IMAGES_VARIATIONS, send_data);
         let res: Json = result.unwrap();
-        let image: Image = serde_json::from_value(res.clone()).unwrap();
-        Ok(image)
+        let images: Images = serde_json::from_value(res.clone()).unwrap();
+        Ok(images)
     }
 }
 
