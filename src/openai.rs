@@ -9,6 +9,12 @@ impl Auth {
 	pub fn new(api_key: &str) -> Auth {
 		Auth { api_key: api_key.to_string(), organization: None }
 	}
+
+	pub fn from_env() -> Result<Self, String> {
+		let api_key =
+			std::env::var("OPENAI_API_KEY").map_err(|_| "Missing OPENAI_API_KEY".to_string())?;
+		Ok(Self { api_key, organization: None })
+	}
 }
 
 pub struct OpenAI {
@@ -28,11 +34,21 @@ impl OpenAI {
 		self.agent = ureq::AgentBuilder::new().proxy(proxy).build();
 		self
 	}
+
+	pub fn use_env_proxy(mut self) -> Result<OpenAI, String> {
+		let mut proxy = std::env::var("http_proxy");
+		if let Err(_) = proxy {
+			proxy = std::env::var("https_proxy");
+		}
+		let proxy = proxy.map_err(|_| "Missing http_proxy or https_proxy".to_string())?;
+		let proxy = ureq::Proxy::new(proxy).unwrap();
+		self.agent = ureq::AgentBuilder::new().proxy(proxy).build();
+		Ok(self)
+	}
 }
 
 #[cfg(test)]
 pub fn new_test_openai() -> OpenAI {
-	let api_key = "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";
-	let auth = Auth::new(api_key);
-	OpenAI::new(auth, "https://api.openai.com/v1/").set_proxy("http://192.168.3.10:10808")
+	let auth = Auth::from_env().unwrap();
+	OpenAI::new(auth, "https://api.openai.com/v1/").use_env_proxy().unwrap()
 }
