@@ -1,7 +1,9 @@
-/// List and describe the various models available in the API.
-/// You can refer to the Models documentation to understand
-/// what models are available and the differences between them.
-/// See: https://platform.openai.com/docs/api-reference/models
+// List and describe the various models available in the API.
+// You can refer to the Models documentation to understand
+// what models are available and the differences between them.
+// See: https://platform.openai.com/docs/api-reference/models
+
+//! Models API
 
 use crate::{
     openai::OpenAI,
@@ -39,7 +41,7 @@ pub struct Permission {
     pub is_blocking: bool,
 }
 
-pub trait ModelApi {
+pub trait ModelsApi {
     /// Lists the currently available models, 
     /// and provides basic information about each one such as the owner and availability.
     fn models_list(&self) -> Result<Vec<Model>, Error>;
@@ -48,7 +50,7 @@ pub trait ModelApi {
     fn models_retrieve(&self, model_id: &str) -> ApiResult<Model>;
 }
 
-impl ModelApi for OpenAI {
+impl ModelsApi for OpenAI {
     fn models_list(&self) -> ApiResult<Vec<Model>> {
         let resp = self.get(MODELS_LIST);
         if let Err(e) = resp {
@@ -76,7 +78,7 @@ impl ModelApi for OpenAI {
 
 #[cfg(test)]
 mod tests {
-    use crate::{apis::models::ModelApi, openai::new_test_openai};
+    use crate::{apis::models::ModelsApi, openai::new_test_openai};
 
     #[test]
     fn test_models() {

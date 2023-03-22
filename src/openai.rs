@@ -1,8 +1,5 @@
 use ureq::{Agent, AgentBuilder};
 
-/// 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
-/// org-Vrhcw5F7a7zBBsSbvrqUpQFL
-/// https://api.openai.com/v1/
 pub struct Auth {
     pub api_key: String,
     pub organization: Option<String>,

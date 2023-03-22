@@ -1,6 +1,8 @@
-/// Given a prompt, the model will return one or more predicted completions,
-/// and can also return the probabilities of alternative tokens at each position.
-/// See: https://platform.openai.com/docs/api-reference/completions
+// Given a prompt, the model will return one or more predicted completions,
+// and can also return the probabilities of alternative tokens at each position.
+// See: https://platform.openai.com/docs/api-reference/completions
+
+//! Completions API
 
 use std::collections::HashMap;
 
@@ -26,7 +28,7 @@ pub struct Completion {
 
 /// Request body for `Create completion` API
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CompletionBody {
+pub struct CompletionsBody {
     /// ID of the model to use
     pub model: String,
     /// The prompt(s) to generate completions for,
@@ -150,13 +152,13 @@ pub struct Usage {
     pub total_tokens: u32,
 }
 
-pub trait CompletionApi {
+pub trait CompletionsApi {
     /// Creates a completion for the provided prompt and parameters
-    fn completion_create(&self, completions_body: &CompletionBody) -> ApiResult<Completion>;
+    fn completion_create(&self, completions_body: &CompletionsBody) -> ApiResult<Completion>;
 }
 
-impl CompletionApi for OpenAI {
-    fn completion_create(&self, completions_body: &CompletionBody) -> ApiResult<Completion> {
+impl CompletionsApi for OpenAI {
+    fn completion_create(&self, completions_body: &CompletionsBody) -> ApiResult<Completion> {
         let request_body = serde_json::to_value(completions_body).unwrap();
         let result = self.post(COMPLETION_CREATE, request_body);
         let res: Json = result.unwrap();
@@ -169,12 +171,12 @@ impl CompletionApi for OpenAI {
 mod tests {
     use crate::openai::new_test_openai;
 
-    use super::{CompletionApi, CompletionBody};
+    use super::{CompletionsApi, CompletionsBody};
 
     #[test]
     fn test_completions() {
         let openai = new_test_openai();
-        let body = CompletionBody {
+        let body = CompletionsBody {
             model: "babbage".to_string(),
             prompt: Some(vec!["Say this is a test".to_string()]),
             suffix: None,

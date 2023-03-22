@@ -1,5 +1,7 @@
-/// Given a chat conversation, the model will return a chat completion response.
-/// See: https://platform.openai.com/docs/api-reference/chat
+// Given a chat conversation, the model will return a chat completion response.
+// See: https://platform.openai.com/docs/api-reference/chat
+
+//! Chat API
 
 use std::collections::HashMap;
 

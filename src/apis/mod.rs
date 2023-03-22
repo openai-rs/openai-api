@@ -1,6 +1,7 @@
 mod chat;
 mod completions;
 mod edits;
+mod images;
 mod models;
 
 // Models API
@@ -12,3 +13,7 @@ const COMPLETION_CREATE: &str = "completions";
 const CHAT_COMPLETION_CREATE: &str = "chat/completions";
 // Edits API
 const EDIT_CREATE: &str = "edits";
+// Images API
+const IMAGES_CREATE: &str = "images/generations";
+const IMAGES_EDIT: &str = "images/edits";
+const IMAGES_VARIATIONS: &str = "images/variations";

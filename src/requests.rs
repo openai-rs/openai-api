@@ -1,12 +1,13 @@
 use std::collections::HashMap;
 
 use crate::openai::OpenAI;
+use multipart::client::lazy::{Multipart};
 
 #[cfg(not(test))]
-use log::{error, info};
+use log::{debug, error, info};
 
 #[cfg(test)]
-use std::{println as info, println as error};
+use std::{println as info, eprintln as error, println as debug};
 
 pub type Json = serde_json::Value;
 pub type ApiResult<T> = Result<T, Error>;
@@ -18,8 +19,9 @@ pub enum Error {
 }
 
 pub trait Requests {
-    fn post(&self, url: &str, body: Json) -> ApiResult<Json>;
-    fn get(&self, url: &str) -> ApiResult<Json>;
+    fn post(&self, sub_url: &str, body: Json) -> ApiResult<Json>;
+    fn post_multipart(&self, sub_url: &str, multipart: Multipart) -> ApiResult<Json>;
+    fn get(&self, sub_url: &str) -> ApiResult<Json>;
 }
 
 impl Requests for OpenAI {
@@ -43,7 +45,7 @@ impl Requests for OpenAI {
         match response {
             Ok(resp) => {
                 let json = resp.into_json::<Json>();
-                info!("<== ✔️\n\tDone api: {sub_url}, resp: {:?}", json);
+                debug!("<== ✔️\n\tDone api: {sub_url}, resp: {:?}", json);
                 Ok(json.unwrap())
             }
             Err(err) => {
@@ -73,7 +75,7 @@ impl Requests for OpenAI {
         match response {
             Ok(resp) => {
                 let json = resp.into_json::<Json>();
-                info!("<== ✔️\n\tDone api: {sub_url}, resp: {:?}", json);
+                debug!("<== ✔️\n\tDone api: {sub_url}, resp: {:?}", json);
                 Ok(json.unwrap())
             }
             Err(err) => {
@@ -82,6 +84,40 @@ impl Requests for OpenAI {
             }
         }
     }
+
+    fn post_multipart(&self, sub_url: &str, mut multipart: Multipart) -> ApiResult<Json> {
+        info!("===> 🚀 Post multipart api: {sub_url}, multipart: {:?}", multipart);
+
+        let form_data = multipart.prepare().unwrap();
+
+        let mut headers = HashMap::new();
+        headers.insert("Authorization", &format!("Bearer {}", self.auth.api_key));
+
+        let response = self
+            .agent
+            .post(&(self.api_url.clone() + sub_url))
+            .set("Content-Type", &format!("multipart/form-data; boundary={}", form_data.boundary()))
+            .set(
+                "OpenAI-Organization",
+                &self.auth.organization.clone().unwrap_or_default(),
+            )
+            .set("Authorization", &format!("Bearer {}", self.auth.api_key))
+            .send(form_data);
+
+        match response {
+            Ok(resp) => {
+                let json = resp.into_json::<Json>();
+                debug!("<== ✔️\n\tDone api: {sub_url}, resp: {:?}", json);
+                Ok(json.unwrap())
+            }
+            Err(err) => {
+                error!("<== ❌\n\tError api: {sub_url}, info: {err}");
+                Err(Error::RequestError(err.to_string()))
+            }
+        }
+    }
+
+
 }
 
 #[cfg(test)]

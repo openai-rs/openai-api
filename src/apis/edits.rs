@@ -1,4 +1,6 @@
-/// Given a prompt and an instruction, the model will return an edited version of the prompt.
+// Given a prompt and an instruction, the model will return an edited version of the prompt.
+
+//! Edits API
 
 use crate::{
     openai::OpenAI,
@@ -12,7 +14,7 @@ use super::{
 };
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct EditBody {
+pub struct EditsBody {
     pub model: String,
     pub instruction: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -25,13 +27,13 @@ pub struct EditBody {
     pub top_p: Option<f32>,
 }
 
-pub trait EditApi {
+pub trait EditsApi {
     /// Creates a new edit for the provided input, instruction, and parameters.
-    fn edit_create(&self, chat_body: &EditBody) -> ApiResult<Completion>;
+    fn edit_create(&self, chat_body: &EditsBody) -> ApiResult<Completion>;
 }
 
-impl EditApi for OpenAI {
-    fn edit_create(&self, chat_body: &EditBody) -> ApiResult<Completion> {
+impl EditsApi for OpenAI {
+    fn edit_create(&self, chat_body: &EditsBody) -> ApiResult<Completion> {
         let request_body = serde_json::to_value(chat_body).unwrap();
         let result = self.post(EDIT_CREATE, request_body);
         let res: Json = result.unwrap();
@@ -42,12 +44,12 @@ impl EditApi for OpenAI {
 
 #[cfg(test)]
 mod tests {
-    use crate::{openai::new_test_openai, apis::edits::{EditBody, EditApi}};
+    use crate::{openai::new_test_openai, apis::edits::{EditsBody, EditsApi}};
 
     #[test]
     fn test_edit_create() {
         let openai = new_test_openai();
-        let body = EditBody {
+        let body = EditsBody {
             model: "text-davinci-edit-001".to_string(),
             temperature: None,
             top_p: None,
