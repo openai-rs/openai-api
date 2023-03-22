@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
 use crate::openai::OpenAI;
-use multipart::client::lazy::{Multipart};
+use multipart::client::lazy::Multipart;
 
 #[cfg(not(test))]
 use log::{debug, error, info};
 
 #[cfg(test)]
-use std::{println as info, eprintln as error, println as debug};
+use std::{eprintln as error, println as info, println as debug};
 
 pub type Json = serde_json::Value;
 pub type ApiResult<T> = Result<T, Error>;
@@ -29,7 +29,7 @@ impl Requests for OpenAI {
         let mut headers = HashMap::new();
         headers.insert("Authorization", &format!("Bearer {}", self.auth.api_key));
 
-        info!("===> 🚀 Post api: {sub_url}, body: {body}");
+        info!("===> 🚀\n\tPost api: {sub_url}, body: {body}");
 
         let response = self
             .agent
@@ -42,24 +42,14 @@ impl Requests for OpenAI {
             .set("Authorization", &format!("Bearer {}", self.auth.api_key))
             .send_json(body);
 
-        match response {
-            Ok(resp) => {
-                let json = resp.into_json::<Json>();
-                debug!("<== ✔️\n\tDone api: {sub_url}, resp: {:?}", json);
-                Ok(json.unwrap())
-            }
-            Err(err) => {
-                error!("<== ❌\n\tError api: {sub_url}, info: {err}");
-                Err(Error::RequestError(err.to_string()))
-            }
-        }
+        deal_response(response, sub_url)
     }
 
     fn get(&self, sub_url: &str) -> ApiResult<Json> {
         let mut headers = HashMap::new();
         headers.insert("Authorization", &format!("Bearer {}", self.auth.api_key));
 
-        info!("===> 🚀 Get api: {sub_url}");
+        info!("===> 🚀\n\tGet api: {sub_url}");
 
         let response = self
             .agent
@@ -72,21 +62,14 @@ impl Requests for OpenAI {
             .set("Authorization", &format!("Bearer {}", self.auth.api_key))
             .call();
 
-        match response {
-            Ok(resp) => {
-                let json = resp.into_json::<Json>();
-                debug!("<== ✔️\n\tDone api: {sub_url}, resp: {:?}", json);
-                Ok(json.unwrap())
-            }
-            Err(err) => {
-                error!("<== ❌\n\t Error api: {sub_url}, info: {err}");
-                Err(Error::RequestError(err.to_string()))
-            }
-        }
+        deal_response(response, sub_url)
     }
 
     fn post_multipart(&self, sub_url: &str, mut multipart: Multipart) -> ApiResult<Json> {
-        info!("===> 🚀 Post multipart api: {sub_url}, multipart: {:?}", multipart);
+        info!(
+            "===> 🚀\n\tPost multipart api: {sub_url}, multipart: {:?}",
+            multipart
+        );
 
         let form_data = multipart.prepare().unwrap();
 
@@ -96,7 +79,10 @@ impl Requests for OpenAI {
         let response = self
             .agent
             .post(&(self.api_url.clone() + sub_url))
-            .set("Content-Type", &format!("multipart/form-data; boundary={}", form_data.boundary()))
+            .set(
+                "Content-Type",
+                &format!("multipart/form-data; boundary={}", form_data.boundary()),
+            )
             .set(
                 "OpenAI-Organization",
                 &self.auth.organization.clone().unwrap_or_default(),
@@ -104,20 +90,29 @@ impl Requests for OpenAI {
             .set("Authorization", &format!("Bearer {}", self.auth.api_key))
             .send(form_data);
 
-        match response {
-            Ok(resp) => {
-                let json = resp.into_json::<Json>();
-                debug!("<== ✔️\n\tDone api: {sub_url}, resp: {:?}", json);
-                Ok(json.unwrap())
-            }
-            Err(err) => {
-                error!("<== ❌\n\tError api: {sub_url}, info: {err}");
-                Err(Error::RequestError(err.to_string()))
-            }
-        }
+        deal_response(response, sub_url)
     }
+}
 
-
+fn deal_response(response: Result<ureq::Response, ureq::Error>, sub_url: &str) -> ApiResult<Json> {
+    match response {
+        Ok(resp) => {
+            let json = resp.into_json::<Json>();
+            debug!("<== ✔️\n\tDone api: {sub_url}, resp: {:?}", json);
+            return Ok(json.unwrap());
+        }
+        Err(err) => match err {
+            ureq::Error::Status(status, response) => {
+                let error_msg = response.into_json::<Json>().unwrap();
+                error!("<== ❌\n\tError api: {sub_url}, status: {status}, error: {error_msg}");
+                return Err(Error::RequestError(error_msg.to_string()));
+            }
+            ureq::Error::Transport(e) => {
+                error!("<== ❌\n\tError api: {sub_url}, error: {:?}", e.to_string());
+                return Err(Error::RequestError(e.to_string()));
+            }
+        },
+    }
 }
 
 #[cfg(test)]

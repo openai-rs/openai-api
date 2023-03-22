@@ -11,12 +11,11 @@ use crate::{
 use multipart::client::lazy::Multipart;
 use serde::{Deserialize, Serialize};
 use std::{fs::File, str};
-use crate::requests::Error::ApiError;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ImagesBody {
     /// A text description of the desired image(s). The maximum length is 1000 characters.
-    pub prompt: Option<String>,
+    pub prompt: String,
     /// The number of images to generate. Must be between 1 and 10.
     /// Defaults to 1
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -68,9 +67,6 @@ pub trait ImagesApi {
 
 impl ImagesApi for OpenAI {
     fn image_create(&self, images_body: &ImagesBody) -> ApiResult<Images> {
-        if images_body.prompt.is_none() {
-            return Err(ApiError("Prompt is required.".to_string()))
-        }
         let request_body = serde_json::to_value(images_body).unwrap();
         let result = self.post(IMAGES_CREATE, request_body);
         let res: Json = result.unwrap();
@@ -79,13 +75,9 @@ impl ImagesApi for OpenAI {
     }
 
     fn image_edit(&self, images_edit_body: ImagesEditBody) -> ApiResult<Images> {
-        if images_edit_body.images_body.prompt.is_none() {
-            return Err(ApiError("Prompt is required.".to_string()))
-        }
-
         let mut send_data = Multipart::new();
 
-        send_data.add_text("prompt", images_edit_body.images_body.prompt.unwrap());
+        send_data.add_text("prompt", images_edit_body.images_body.prompt);
         if let Some(n) = images_edit_body.images_body.n {
             send_data.add_text("n", n.to_string());
         }
@@ -156,7 +148,7 @@ mod tests {
     fn test_image_create() {
         let openai = new_test_openai();
         let body = ImagesBody {
-            prompt: Some("A cute baby sea otter".to_string()),
+            prompt: "A cute baby sea otter".to_string(),
             n: Some(2),
             size: Some("1024x1024".to_string()),
             response_format: None,
@@ -171,10 +163,10 @@ mod tests {
     #[test]
     fn test_image_edit() {
         let openai = new_test_openai();
-        let file = File::open("test_files/test.png").unwrap();
+        let file = File::open("test_files/image.png").unwrap();
         let multipart = ImagesEditBody {
             images_body: ImagesBody {
-                prompt: Some("A cute baby sea otter wearing a beret".to_string()),
+                prompt: "A cute baby sea otter wearing a beret".to_string(),
                 n: Some(2),
                 size: Some("1024x1024".to_string()),
                 response_format: None,
@@ -192,10 +184,10 @@ mod tests {
     #[test]
     fn test_image_variations() {
         let openai = new_test_openai();
-        let file = File::open("test_files/test.png").unwrap();
+        let file = File::open("test_files/image.png").unwrap();
         let multipart = ImagesEditBody {
             images_body: ImagesBody {
-                prompt: None,
+                prompt: "".to_string(),
                 n: Some(2),
                 size: Some("1024x1024".to_string()),
                 response_format: None,

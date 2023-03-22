@@ -34,7 +34,7 @@ pub struct Embeddings {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct EmbeddingData {
     object: Option<String>,
-    embedding: Option<Vec<f32>>,
+    embedding: Option<Vec<f64>>,
     index: i32,
 }
 

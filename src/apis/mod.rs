@@ -6,6 +6,7 @@ mod edits;
 mod images;
 mod models;
 mod embeddings;
+mod audio;
 
 // Models API
 const MODELS_LIST: &str = "models";
@@ -22,6 +23,9 @@ const IMAGES_EDIT: &str = "images/edits";
 const IMAGES_VARIATIONS: &str = "images/variations";
 // Embeddings API
 const EMBEDDINGS_CREATE: &str = "embeddings";
+// Audio API
+const AUDIO_TRANSCRIPTION_CREATE: &str = "audio/transcriptions";
+const AUDIO_TRANSLATIONS_CREATE: &str = "audio/translations";
 
 
 #[derive(Debug, Serialize, Deserialize)]
