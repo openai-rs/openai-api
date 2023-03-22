@@ -21,7 +21,8 @@ impl Requests for OpenAI {
         let mut headers = HashMap::new();
         headers.insert("Authorization", &format!("Bearer {}", self.auth.api_key));
 
-        log::info!("=== Post url: {:?}, body: {:?}", sub_url, body);
+        log::info!("=== 🚀 Post url: {:?}, body: {body}", sub_url);
+        println!("=== 🚀 Post url: {:?}, body: {body}", sub_url);
 
         let response = self
             .agent
@@ -44,7 +45,7 @@ impl Requests for OpenAI {
         let mut headers = HashMap::new();
         headers.insert("Authorization", &format!("Bearer {}", self.auth.api_key));
 
-        log::info!("=== Get url: {:?}", sub_url);
+        log::info!("=== 🚀 Get url: {:?}", sub_url);
 
         let response = self
             .agent

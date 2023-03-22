@@ -6,12 +6,12 @@ use crate::{
 };
 use serde::{Deserialize, Serialize};
 
-use super::COMPLETIONS_API;
+use super::COMPLETION_CREATE;
 
 /// Given a prompt, the model will return one or more predicted completions,
 /// and can also return the probabilities of alternative tokens at each position.
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Completions {
+pub struct Completion {
     pub id: String,
     pub object: Option<String>,
     pub created: u64,
@@ -22,7 +22,7 @@ pub struct Completions {
 
 /// Request body for `Create completion` API
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CompletionsBody {
+pub struct CompletionBody {
     /// ID of the model to use
     pub model: String,
     /// The prompt(s) to generate completions for,
@@ -128,6 +128,15 @@ pub struct Choice {
     pub index: u32,
     pub logprobs: Option<String>,
     pub finish_reason: Option<String>,
+    pub message: Option<Message>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Message {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub role: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub content: Option<String>
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -137,16 +146,16 @@ pub struct Usage {
     pub total_tokens: u32,
 }
 
-pub trait CompletionsApi {
-    fn completions(&self, completions_body: &CompletionsBody) -> ApiResult<Completions>;
+pub trait CompletionApi {
+    fn completion_create(&self, completions_body: &CompletionBody) -> ApiResult<Completion>;
 }
 
-impl CompletionsApi for OpenAI {
-    fn completions(&self, completions_body: &CompletionsBody) -> ApiResult<Completions> {
+impl CompletionApi for OpenAI {
+    fn completion_create(&self, completions_body: &CompletionBody) -> ApiResult<Completion> {
         let request_body = serde_json::to_value(completions_body).unwrap();
-        let result = self.post(COMPLETIONS_API, request_body);
+        let result = self.post(COMPLETION_CREATE, request_body);
         let res: Json = result.unwrap();
-        let completions: Completions = serde_json::from_value(res.clone()).unwrap();
+        let completions: Completion = serde_json::from_value(res.clone()).unwrap();
         Ok(completions)
     }
 }
@@ -155,12 +164,12 @@ impl CompletionsApi for OpenAI {
 mod tests {
     use crate::openai::new_test_openai;
 
-    use super::{CompletionsApi, CompletionsBody};
+    use super::{CompletionApi, CompletionBody};
 
     #[test]
     fn test_completions() {
         let openai = new_test_openai();
-        let body = CompletionsBody {
+        let body = CompletionBody {
             model: "babbage".to_string(),
             prompt: Some(vec!["Say this is a test".to_string()]),
             suffix: None,
@@ -178,7 +187,7 @@ mod tests {
             logit_bias: None,
             user: None,
         };
-        let rs = openai.completions(&body);
+        let rs = openai.completion_create(&body);
         let choice = rs.unwrap().choices;
         let text = &choice[0].text.as_ref().unwrap();
         assert_eq!(text.contains("of the new system"), true);

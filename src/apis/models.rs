@@ -4,7 +4,8 @@ use crate::{
 };
 use serde::{Deserialize, Serialize};
 
-use super::MODELS_API;
+use super::MODELS_LIST;
+use super::MODELS_RETRIEVE;
 
 /// List and describe the various models available in the API.
 /// You can refer to the [Models](https://platform.openai.com/docs/models) documentation
@@ -40,7 +41,7 @@ pub trait ModelApi {
 
 impl ModelApi for OpenAI {
     fn models_list(&self) -> ApiResult<Vec<Model>> {
-        let resp = self.get(MODELS_API);
+        let resp = self.get(MODELS_LIST);
         if let Err(e) = resp {
             return Err(e);
         }
@@ -54,7 +55,7 @@ impl ModelApi for OpenAI {
     }
 
     fn models_retrieve(&self, model_id: &str) -> ApiResult<Model> {
-        let resp = self.get(&(MODELS_API.to_owned() + "/" + model_id));
+        let resp = self.get(&(MODELS_RETRIEVE.to_owned() + model_id));
         if let Err(e) = resp {
             return Err(e);
         }
