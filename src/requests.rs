@@ -21,6 +21,8 @@ impl Requests for OpenAI {
         let mut headers = HashMap::new();
         headers.insert("Authorization", &format!("Bearer {}", self.auth.api_key));
 
+        log::info!("=== Post url: {:?}, body: {:?}", sub_url, body);
+
         let response = self
             .agent
             .post(&(self.api_url.clone() + sub_url))
@@ -41,6 +43,8 @@ impl Requests for OpenAI {
     fn get(&self, sub_url: &str) -> ApiResult<Json> {
         let mut headers = HashMap::new();
         headers.insert("Authorization", &format!("Bearer {}", self.auth.api_key));
+
+        log::info!("=== Get url: {:?}", sub_url);
 
         let response = self
             .agent
