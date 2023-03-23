@@ -1,4 +1,4 @@
-use crate::openai::{OpenAI};
+use crate::openai::OpenAI;
 use crate::*;
 use multipart::client::lazy::Multipart;
 
