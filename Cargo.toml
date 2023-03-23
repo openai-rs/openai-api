@@ -1,5 +1,5 @@
 [package]
-name = "openai_api"
+name = "openai_api_rust"
 version = "0.1.1"
 authors = ["i@guantong.dev"]
 edition = "2021"

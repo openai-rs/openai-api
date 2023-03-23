@@ -4,6 +4,7 @@
 ![GitHub](https://img.shields.io/github/license/openai-rs/openai-api?style=flat-square)
 
 A community-maintained library provides a simple and convenient way to interact with the OpenAI API.
+No complex async and redundant dependencies.
 
 ## API
 
@@ -28,14 +29,14 @@ ___
 Add the following to your Cargo.toml file:
 
 ```toml
-openai_api = "0.1.1"
+openai_api_rust = "0.1.1"
 ```
 
 Then use the crate in your Rust code:
 
 ```rust
-use openai_api::*;
-use openai_api::edits::*;
+use openai_api_rust::*;
+use openai_api_rust::edits::*;
 
 fn main() {
     let auth = Auth::from_env().unwrap();
