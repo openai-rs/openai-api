@@ -6,7 +6,7 @@ edition = "2021"
 license = "MIT"
 homepage = "https://github.com/openai-rs/openapi-api"
 description = "OpenAI api for rust language"
-keywords = ["openai api", "openai", "openai-api"]
+keywords = ["openai_api", "openai", "openai-api"]
 categories = ["api-bindings"]
 
 [dependencies]
