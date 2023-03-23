@@ -1,6 +1,6 @@
 [package]
 name = "openai_api"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["i@guantong.dev"]
 edition = "2021"
 license = "MIT"
@@ -8,8 +8,6 @@ homepage = "https://github.com/openai-rs/openapi-api"
 description = "OpenAI api for rust language"
 keywords = ["openai api", "openai", "openai-api"]
 categories = ["api-bindings"]
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 ureq = { version = "^2.6", features = ["json"] }
