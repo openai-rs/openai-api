@@ -20,7 +20,7 @@ impl Auth {
 pub struct OpenAI {
 	pub auth: Auth,
 	pub api_url: String,
-	pub agent: Agent,
+	pub(crate) agent: Agent,
 }
 
 #[allow(dead_code)]

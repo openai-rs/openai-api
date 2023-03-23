@@ -1,7 +1,9 @@
 #![warn(unused_crate_dependencies)]
 
 pub mod apis;
+pub use apis::*;
 pub mod openai;
+pub use openai::*;
 mod requests;
 
 use log as _;
