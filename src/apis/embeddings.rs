@@ -47,8 +47,7 @@ pub trait EmbeddingsApi {
 impl EmbeddingsApi for OpenAI {
 	fn embeddings_create(&self, embeddings_body: &EmbeddingsBody) -> ApiResult<Embeddings> {
 		let request_body = serde_json::to_value(embeddings_body).unwrap();
-		let result = self.post(EMBEDDINGS_CREATE, request_body);
-		let res: Json = result.unwrap();
+		let res = self.post(EMBEDDINGS_CREATE, request_body)?;
 		let embeddings: Embeddings = serde_json::from_value(res.clone()).unwrap();
 		Ok(embeddings)
 	}

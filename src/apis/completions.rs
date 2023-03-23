@@ -149,8 +149,7 @@ pub trait CompletionsApi {
 impl CompletionsApi for OpenAI {
 	fn completion_create(&self, completions_body: &CompletionsBody) -> ApiResult<Completion> {
 		let request_body = serde_json::to_value(completions_body).unwrap();
-		let result = self.post(COMPLETION_CREATE, request_body);
-		let res: Json = result.unwrap();
+		let res = self.post(COMPLETION_CREATE, request_body)?;
 		let completion: Completion = serde_json::from_value(res.clone()).unwrap();
 		Ok(completion)
 	}

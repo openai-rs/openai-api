@@ -66,8 +66,7 @@ impl AudioApi for OpenAI {
 
 		send_data.add_stream("file", audio_body.file, Some("mp3"), None);
 
-		let result = self.post_multipart(AUDIO_TRANSCRIPTION_CREATE, send_data);
-		let res: Json = result.unwrap();
+		let res = self.post_multipart(AUDIO_TRANSCRIPTION_CREATE, send_data)?;
 		let audio: Audio = serde_json::from_value(res.clone()).unwrap();
 		Ok(audio)
 	}
@@ -91,8 +90,7 @@ impl AudioApi for OpenAI {
 
 		send_data.add_stream("file", audio_body.file, Some("mp3"), None);
 
-		let result = self.post_multipart(AUDIO_TRANSLATIONS_CREATE, send_data);
-		let res: Json = result.unwrap();
+		let res = self.post_multipart(AUDIO_TRANSLATIONS_CREATE, send_data)?;
 		let audio: Audio = serde_json::from_value(res.clone()).unwrap();
 		Ok(audio)
 	}

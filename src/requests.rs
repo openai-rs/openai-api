@@ -64,14 +64,14 @@ fn deal_response(response: Result<ureq::Response, ureq::Error>, sub_url: &str) -
 	match response {
 		Ok(resp) => {
 			let json = resp.into_json::<Json>().unwrap();
-			debug!("<== ✔️\n\tDone api: {sub_url}, resp: {:?}", json);
+			debug!("<== ✔️\n\tDone api: {sub_url}, resp: {json}");
 			return Ok(json);
 		},
 		Err(err) => match err {
 			ureq::Error::Status(status, response) => {
 				let error_msg = response.into_json::<Json>().unwrap();
 				error!("<== ❌\n\tError api: {sub_url}, status: {status}, error: {error_msg}");
-				return Err(Error::ApiError(error_msg.to_string()));
+				return Err(Error::ApiError(format!("{error_msg}")));
 			},
 			ureq::Error::Transport(e) => {
 				error!("<== ❌\n\tError api: {sub_url}, error: {:?}", e.to_string());
@@ -96,14 +96,14 @@ mod tests {
 			"temperature": 0.7
 		});
 		let sub_url = "chat/completions";
-		let result = openai.post(sub_url, body);
-		assert!(result.unwrap().to_string().contains("This is a test"));
+		let result = openai.post(sub_url, body).unwrap();
+		assert!(result.to_string().contains("This is a test"));
 	}
 
 	#[test]
 	fn test_get() {
 		let openai = openai::new_test_openai();
-		let resp = openai.get("models");
-		assert!(resp.unwrap().to_string().contains("babbage"));
+		let resp = openai.get("models").unwrap();
+		assert!(resp.to_string().contains("babbage"));
 	}
 }

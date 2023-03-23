@@ -66,8 +66,7 @@ pub trait ImagesApi {
 impl ImagesApi for OpenAI {
 	fn image_create(&self, images_body: &ImagesBody) -> ApiResult<Images> {
 		let request_body = serde_json::to_value(images_body).unwrap();
-		let result = self.post(IMAGES_CREATE, request_body);
-		let res: Json = result.unwrap();
+		let res = self.post(IMAGES_CREATE, request_body)?;
 		let images: Images = serde_json::from_value(res.clone()).unwrap();
 		Ok(images)
 	}
@@ -93,8 +92,7 @@ impl ImagesApi for OpenAI {
 		}
 		send_data.add_stream("image", images_edit_body.image, Some("blob"), Some(mime::IMAGE_PNG));
 
-		let result = self.post_multipart(IMAGES_EDIT, send_data);
-		let res: Json = result.unwrap();
+		let res = self.post_multipart(IMAGES_EDIT, send_data)?;
 		let images: Images = serde_json::from_value(res.clone()).unwrap();
 		Ok(images)
 	}
@@ -116,8 +114,7 @@ impl ImagesApi for OpenAI {
 		}
 		send_data.add_stream("image", images_edit_body.image, Some("blob"), Some(mime::IMAGE_PNG));
 
-		let result = self.post_multipart(IMAGES_VARIATIONS, send_data);
-		let res: Json = result.unwrap();
+		let res = self.post_multipart(IMAGES_VARIATIONS, send_data)?;
 		let images: Images = serde_json::from_value(res.clone()).unwrap();
 		Ok(images)
 	}

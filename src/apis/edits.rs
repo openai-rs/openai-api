@@ -30,8 +30,7 @@ pub trait EditsApi {
 impl EditsApi for OpenAI {
 	fn edit_create(&self, chat_body: &EditsBody) -> ApiResult<Completion> {
 		let request_body = serde_json::to_value(chat_body).unwrap();
-		let result = self.post(EDIT_CREATE, request_body);
-		let res: Json = result.unwrap();
+		let res = self.post(EDIT_CREATE, request_body)?;
 		let completion: Completion = serde_json::from_value(res.clone()).unwrap();
 		Ok(completion)
 	}
