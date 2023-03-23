@@ -4,11 +4,8 @@
 // See: https://platform.openai.com/docs/api-reference/models
 
 //! Models API
-
-use crate::{
-	openai::{Error, OpenAI},
-	requests::{ApiResult, Json, Requests},
-};
+use crate::requests::Requests;
+use crate::*;
 use serde::{Deserialize, Serialize};
 
 use super::MODELS_LIST;
@@ -44,7 +41,7 @@ pub struct Permission {
 pub trait ModelsApi {
 	/// Lists the currently available models,
 	/// and provides basic information about each one such as the owner and availability.
-	fn models_list(&self) -> Result<Vec<Model>, Error>;
+	fn models_list(&self) -> ApiResult<Vec<Model>>;
 	/// Retrieves a model instance,
 	/// providing basic information about the model such as the owner and permissioning.
 	fn models_retrieve(&self, model_id: &str) -> ApiResult<Model>;
@@ -52,11 +49,7 @@ pub trait ModelsApi {
 
 impl ModelsApi for OpenAI {
 	fn models_list(&self) -> ApiResult<Vec<Model>> {
-		let resp = self.get(MODELS_LIST);
-		if let Err(e) = resp {
-			return Err(e);
-		}
-		let res: Json = resp.unwrap();
+		let res: Json = self.get(MODELS_LIST)?;
 		let data = res.as_object().unwrap().get("data");
 		if let Some(data) = data {
 			let models: Vec<Model> = serde_json::from_value(data.clone()).unwrap();
@@ -66,12 +59,8 @@ impl ModelsApi for OpenAI {
 	}
 
 	fn models_retrieve(&self, model_id: &str) -> ApiResult<Model> {
-		let resp = self.get(&(MODELS_RETRIEVE.to_owned() + model_id));
-		if let Err(e) = resp {
-			return Err(e);
-		}
-		let res: Json = resp.unwrap();
-		let model: Model = serde_json::from_value(res.clone()).unwrap();
+		let res: Json = self.get(&(MODELS_RETRIEVE.to_owned() + model_id))?;
+		let model: Model = serde_json::from_value(res).unwrap();
 		Ok(model)
 	}
 }
@@ -83,14 +72,14 @@ mod tests {
 	#[test]
 	fn test_models() {
 		let openai = new_test_openai();
-		let result = openai.models_list();
-		assert_eq!(result.unwrap().len() > 0, true);
+		let models = openai.models_list().unwrap();
+		assert!(!models.is_empty());
 	}
 
 	#[test]
 	fn test_get_model() {
 		let openai = new_test_openai();
-		let result = openai.models_retrieve("babbage");
-		assert_eq!("babbage", result.unwrap().id);
+		let model = openai.models_retrieve("babbage").unwrap();
+		assert_eq!("babbage", model.id);
 	}
 }

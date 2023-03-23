@@ -6,10 +6,8 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::{
-	openai::OpenAI,
-	requests::{ApiResult, Json, Requests},
-};
+use crate::requests::Requests;
+use crate::*;
 
 use super::{Usage, EMBEDDINGS_CREATE};
 
@@ -75,6 +73,6 @@ mod tests {
 		let embeddings = rs.unwrap().data;
 		let embedding = embeddings.as_ref().unwrap().get(0).unwrap();
 		let f = embedding.embedding.as_ref().unwrap();
-		assert_eq!(f.len() > 0, true);
+		assert!(!f.is_empty());
 	}
 }

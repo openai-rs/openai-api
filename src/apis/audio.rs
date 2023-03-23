@@ -7,10 +7,8 @@ use std::fs::File;
 use multipart::client::lazy::Multipart;
 use serde::{Deserialize, Serialize};
 
-use crate::{
-	openai::OpenAI,
-	requests::{ApiResult, Json, Requests},
-};
+use crate::requests::Requests;
+use crate::*;
 
 use super::{AUDIO_TRANSCRIPTION_CREATE, AUDIO_TRANSLATIONS_CREATE};
 
@@ -124,7 +122,7 @@ mod tests {
 		let rs = openai.audio_transcription_create(multipart);
 		let audio = rs.unwrap();
 		let text = audio.text.unwrap();
-		assert_eq!(text.contains("千里"), true);
+		assert!(text.contains("千里"));
 	}
 
 	#[test]
@@ -142,6 +140,6 @@ mod tests {
 		let rs = openai.audio_translation_create(multipart);
 		let audio = rs.unwrap();
 		let text = audio.text.unwrap();
-		assert_eq!(text.contains("thousands of miles"), true);
+		assert!(text.contains("thousands of miles"));
 	}
 }

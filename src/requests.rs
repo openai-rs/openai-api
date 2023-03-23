@@ -1,6 +1,5 @@
-use std::collections::HashMap;
-
-use crate::openai::{OpenAI, Error};
+use crate::openai::{OpenAI};
+use crate::*;
 use multipart::client::lazy::Multipart;
 
 #[cfg(not(test))]
@@ -8,9 +7,6 @@ use log::{debug, error, info};
 
 #[cfg(test)]
 use std::{eprintln as error, println as info, println as debug};
-
-pub type Json = serde_json::Value;
-pub type ApiResult<T> = Result<T, Error>;
 
 pub trait Requests {
 	fn post(&self, sub_url: &str, body: Json) -> ApiResult<Json>;
@@ -20,9 +16,6 @@ pub trait Requests {
 
 impl Requests for OpenAI {
 	fn post(&self, sub_url: &str, body: Json) -> ApiResult<Json> {
-		let mut headers = HashMap::new();
-		headers.insert("Authorization", &format!("Bearer {}", self.auth.api_key));
-
 		info!("===> 🚀\n\tPost api: {sub_url}, body: {body}");
 
 		let response = self
@@ -37,9 +30,6 @@ impl Requests for OpenAI {
 	}
 
 	fn get(&self, sub_url: &str) -> ApiResult<Json> {
-		let mut headers = HashMap::new();
-		headers.insert("Authorization", &format!("Bearer {}", self.auth.api_key));
-
 		info!("===> 🚀\n\tGet api: {sub_url}");
 
 		let response = self
@@ -58,9 +48,6 @@ impl Requests for OpenAI {
 
 		let form_data = multipart.prepare().unwrap();
 
-		let mut headers = HashMap::new();
-		headers.insert("Authorization", &format!("Bearer {}", self.auth.api_key));
-
 		let response = self
 			.agent
 			.post(&(self.api_url.clone() + sub_url))
@@ -76,9 +63,9 @@ impl Requests for OpenAI {
 fn deal_response(response: Result<ureq::Response, ureq::Error>, sub_url: &str) -> ApiResult<Json> {
 	match response {
 		Ok(resp) => {
-			let json = resp.into_json::<Json>();
+			let json = resp.into_json::<Json>().unwrap();
 			debug!("<== ✔️\n\tDone api: {sub_url}, resp: {:?}", json);
-			return Ok(json.unwrap());
+			return Ok(json);
 		},
 		Err(err) => match err {
 			ureq::Error::Status(status, response) => {
@@ -110,13 +97,13 @@ mod tests {
 		});
 		let sub_url = "chat/completions";
 		let result = openai.post(sub_url, body);
-		assert_eq!(result.unwrap().to_string().contains("This is a test"), true);
+		assert!(result.unwrap().to_string().contains("This is a test"));
 	}
 
 	#[test]
 	fn test_get() {
 		let openai = openai::new_test_openai();
 		let resp = openai.get("models");
-		assert_eq!(resp.unwrap().to_string().contains("babbage"), true);
+		assert!(resp.unwrap().to_string().contains("babbage"));
 	}
 }

@@ -1,14 +1,20 @@
 [package]
 name = "openai_api"
 version = "0.1.0"
+authors = ["i@guantong.dev"]
 edition = "2021"
+license = "MIT"
+homepage = "https://github.com/openai-rs/openapi-api"
+description = "OpenAI api for rust language"
+keywords = ["openai api", "openai", "openai-api"]
+categories = ["api-bindings"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ureq = { version = "2.6", features = ["json"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-log = "0.4"
-multipart = "0.18.0"
-mime = "0.3.16"
+ureq = { version = "^2.6", features = ["json"] }
+serde = { version = "^1.0", features = ["derive"] }
+serde_json = "^1.0"
+log = "^0.4"
+multipart = "^0.18.0"
+mime = "^0.3.16"

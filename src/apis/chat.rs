@@ -5,10 +5,8 @@
 
 use std::collections::HashMap;
 
-use crate::{
-	openai::OpenAI,
-	requests::{ApiResult, Json, Requests},
-};
+use crate::requests::Requests;
+use crate::*;
 use serde::{Deserialize, Serialize};
 
 use super::{
@@ -132,6 +130,6 @@ mod tests {
 		let choice = rs.unwrap().choices;
 		let message = &choice[0].message.as_ref().unwrap();
 		let content = message.content.as_ref().unwrap();
-		assert_eq!(content.contains("Hello"), true);
+		assert!(content.contains("Hello"));
 	}
 }

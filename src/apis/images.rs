@@ -4,10 +4,8 @@
 //! Images API
 
 use super::{IMAGES_CREATE, IMAGES_EDIT, IMAGES_VARIATIONS};
-use crate::{
-	openai::OpenAI,
-	requests::{ApiResult, Json, Requests},
-};
+use crate::requests::Requests;
+use crate::*;
 use multipart::client::lazy::Multipart;
 use serde::{Deserialize, Serialize};
 use std::{fs::File, str};
@@ -147,7 +145,7 @@ mod tests {
 		let rs = openai.image_create(&body);
 		let images = rs.unwrap().data.unwrap();
 		let image = images.get(0).unwrap();
-		assert_eq!(image.url.contains("http"), true);
+		assert!(image.url.contains("http"));
 	}
 
 	#[test]
@@ -168,7 +166,7 @@ mod tests {
 		let rs = openai.image_edit(multipart);
 		let images = rs.unwrap().data.unwrap();
 		let image = images.get(0).unwrap();
-		assert_eq!(image.url.contains("http"), true);
+		assert!(image.url.contains("http"));
 	}
 
 	#[test]
@@ -189,6 +187,6 @@ mod tests {
 		let rs = openai.image_variation(multipart);
 		let images = rs.unwrap().data.unwrap();
 		let image = images.get(0).unwrap();
-		assert_eq!(image.url.contains("http"), true);
+		assert!(image.url.contains("http"));
 	}
 }

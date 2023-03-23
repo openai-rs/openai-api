@@ -1,12 +1,12 @@
 use serde::{Deserialize, Serialize};
 
-mod audio;
-mod chat;
-mod completions;
-mod edits;
-mod embeddings;
-mod images;
-mod models;
+pub mod audio;
+pub mod chat;
+pub mod completions;
+pub mod edits;
+pub mod embeddings;
+pub mod images;
+pub mod models;
 
 // Models API
 const MODELS_LIST: &str = "models";

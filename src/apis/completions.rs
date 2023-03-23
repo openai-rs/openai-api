@@ -6,10 +6,8 @@
 
 use std::collections::HashMap;
 
-use crate::{
-	openai::OpenAI,
-	requests::{ApiResult, Json, Requests},
-};
+use crate::requests::Requests;
+use crate::*;
 use serde::{Deserialize, Serialize};
 
 use super::{Usage, COMPLETION_CREATE};
@@ -188,6 +186,6 @@ mod tests {
 		let rs = openai.completion_create(&body);
 		let choice = rs.unwrap().choices;
 		let text = &choice[0].text.as_ref().unwrap();
-		assert_eq!(text.contains("of the new system"), true);
+		assert!(text.contains("of the new system"));
 	}
 }

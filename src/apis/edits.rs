@@ -2,10 +2,8 @@
 
 //! Edits API
 
-use crate::{
-	openai::OpenAI,
-	requests::{ApiResult, Json, Requests},
-};
+use crate::requests::Requests;
+use crate::*;
 use serde::{Deserialize, Serialize};
 
 use super::{completions::Completion, EDIT_CREATE};
@@ -60,6 +58,6 @@ mod tests {
 		let rs = openai.edit_create(&body);
 		let choice = rs.unwrap().choices;
 		let text = &choice[0].text.as_ref().unwrap();
-		assert_eq!(text.contains("week"), true);
+		assert!(text.contains("week"));
 	}
 }
