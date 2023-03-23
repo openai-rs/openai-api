@@ -1,9 +1,27 @@
 # OpenAI API for Rust
 
-A community-maintained library provides a simple and convenient way to interact with the OpenAI API.
-
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/openai-rs/openai-api/rust.yml?style=flat-square)
 ![GitHub](https://img.shields.io/github/license/openai-rs/openai-api?style=flat-square)
+
+A community-maintained library provides a simple and convenient way to interact with the OpenAI API.
+
+## API
+
+check [official API reference](https://platform.openai.com/docs/api-reference)
+|API|Support|
+|---|---|
+|Models|✔️|
+|Completions|✔️|
+|Chat|✔️|
+|Edits|✔️|
+|Images|✔️|
+|Embeddings|✔️|
+|Audio|✔️|
+|Files|❌|
+|Fine-tunes|❌|
+|Moderations|❌|
+|Engines|❌|
+___
 
 ## Usage
 
@@ -43,24 +61,6 @@ Output:
 ```bash
 choice: Some("What day of the week is it?\n")
 ```
-
-## API
-
-check [official API reference](https://platform.openai.com/docs/api-reference)
-|API|Support|
-|---|---|
-|Models|✔️|
-|Completions|✔️|
-|Chat|✔️|
-|Edits|✔️|
-|Images|✔️|
-|Embeddings|✔️|
-|Audio|✔️|
-|Files|❌|
-|Fine-tunes|❌|
-|Moderations|❌|
-|Engines|❌|
-___
 
 ## License
 
