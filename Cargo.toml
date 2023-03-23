@@ -1,5 +1,5 @@
 [package]
-name = "openai-api-rs"
+name = "openai_api"
 version = "0.1.0"
 edition = "2021"
 
