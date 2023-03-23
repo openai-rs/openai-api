@@ -1,6 +1,6 @@
 # OpenAI API for Rust
 
-A Rust library provides a simple and convenient way to interact with the OpenAI API.
+A community-maintained library provides a simple and convenient way to interact with the OpenAI API.
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/openai-rs/openai-api/rust.yml?style=flat-square)
 ![GitHub](https://img.shields.io/github/license/openai-rs/openai-api?style=flat-square)
@@ -46,34 +46,22 @@ choice: Some("What day of the week is it?\n")
 
 ## API
 
-### Models
-
-> List and describe the various models available in the API. You can refer to the Models documentation to understand what models are available and the differences between them.
-
-### Completions
-
-> Given a prompt, the model will return one or more predicted completions, and can also return the probabilities of alternative tokens at each position.
-
-### Chat
-
-> Given a chat conversation, the model will return a chat completion response.
-
-### Edits
-
-> Given a prompt and an instruction, the model will return an edited version of the prompt.
-
-### Images
-
-> Given a prompt and/or an input image, the model will generate a new image.
-
-### Embeddings
-
-> Get a vector representation of a given input that can be easily consumed by machine learning models and algorithms.
-
-### Audio
-
-> Learn how to turn audio into text.
+check [official API reference](https://platform.openai.com/docs/api-reference)
+|API|Support|
+|---|---|
+|Models|✔️|
+|Completions|✔️|
+|Chat|✔️|
+|Edits|✔️|
+|Images|✔️|
+|Embeddings|✔️|
+|Audio|✔️|
+|Files|❌|
+|Fine-tunes|❌|
+|Moderations|❌|
+|Engines|❌|
+___
 
 ## License
 
-This library is distributed under the terms of the MIT license. See [LICENSE](https://opensource.org/license/mit/) for details.
+This library is distributed under the terms of the MIT license. See [LICENSE](LICENSE) for details.
