@@ -33,6 +33,12 @@ Add the following to your Cargo.toml file:
 openai_api_rust = "0.1.1"
 ```
 
+Export your API key into the environment variables
+
+```bash
+export OPENAI_API_KEY=<your_api_key>
+```
+
 Then use the crate in your Rust code:
 
 ```rust
@@ -40,10 +46,10 @@ use openai_api_rust::*;
 use openai_api_rust::edits::*;
 
 fn main() {
+    // Load API key from environment OPENAI_API_KEY.
+    // You can also hadcode through `Auth::new(<your_api_key>)`, but it is not recommended.
     let auth = Auth::from_env().unwrap();
-    let openai = OpenAI::new(auth, "https://api.openai.com/v1/")
-        .use_env_proxy()
-        .unwrap();
+    let openai = OpenAI::new(auth, "https://api.openai.com/v1/");
     let body = EditsBody {
         model: "text-davinci-edit-001".to_string(),
         temperature: None,
@@ -62,6 +68,23 @@ Output:
 
 ```bash
 choice: Some("What day of the week is it?\n")
+```
+
+### Use proxy
+
+Load proxy from env
+
+```rust
+let openai = OpenAI::new(auth, "https://api.openai.com/v1/")
+        .use_env_proxy()
+        .unwrap();
+```
+
+Set the proxy manually
+
+```rust
+let openai = OpenAI::new(auth, "https://api.openai.com/v1/")
+        .set_proxy("http://127.0.0.1:1080");
 ```
 
 ## License
