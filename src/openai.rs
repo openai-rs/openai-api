@@ -51,15 +51,20 @@ impl OpenAI {
 		self
 	}
 
-	pub fn use_env_proxy(mut self) -> Result<OpenAI, String> {
-		let mut proxy = std::env::var("http_proxy");
-		if let Err(_) = proxy {
-			proxy = std::env::var("https_proxy");
+	pub fn use_env_proxy(mut self) -> OpenAI {
+		let proxy = match (std::env::var("http_proxy"), std::env::var("https_proxy")) {
+			(Ok(http_proxy), _) => Some(http_proxy),
+			(_, Ok(https_proxy)) => Some(https_proxy),
+			_ => {
+				log::warn!("Missing http_proxy or https_proxy");
+				None
+			}
+		};
+		if let Some(proxy) = proxy {
+			let proxy = ureq::Proxy::new(&proxy).unwrap();
+			self.agent = ureq::AgentBuilder::new().proxy(proxy).build();
 		}
-		let proxy = proxy.map_err(|_| "Missing http_proxy or https_proxy".to_string())?;
-		let proxy = ureq::Proxy::new(proxy).unwrap();
-		self.agent = ureq::AgentBuilder::new().proxy(proxy).build();
-		Ok(self)
+		self
 	}
 }
 
