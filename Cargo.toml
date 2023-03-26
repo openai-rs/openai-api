@@ -1,6 +1,6 @@
 [package]
 name = "openai_api_rust"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["i@guantong.dev"]
 edition = "2021"
 license = "MIT"
