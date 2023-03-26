@@ -71,5 +71,5 @@ impl OpenAI {
 #[cfg(test)]
 pub fn new_test_openai() -> OpenAI {
 	let auth = Auth::from_env().unwrap();
-	OpenAI::new(auth, "https://api.openai.com/v1/").use_env_proxy().unwrap()
+	OpenAI::new(auth, "https://api.openai.com/v1/").use_env_proxy()
 }
