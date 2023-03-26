@@ -614,8 +614,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b7e5500299e16ebb147ae15a00a942af264cf3688f47923b8fc2cd5858f23ad3"
 
 [[package]]
-name = "openai_api"
-version = "0.1.1"
+name = "openai_api_rust"
+version = "0.1.2"
 dependencies = [
  "log 0.4.17",
  "mime 0.3.17",

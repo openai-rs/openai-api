@@ -1,9 +1,18 @@
+use serde::{Deserialize, Serialize};
 use ureq::{Agent, AgentBuilder};
 
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Auth {
 	pub api_key: String,
 	pub organization: Option<String>,
 }
+
+impl Clone for Auth {
+	fn clone(&self) -> Self {
+		Self { api_key: self.api_key.clone(), organization: self.organization.clone() }
+	}
+}
+
 #[allow(dead_code)]
 impl Auth {
 	pub fn new(api_key: &str) -> Auth {
@@ -17,10 +26,17 @@ impl Auth {
 	}
 }
 
+#[derive(Debug)]
 pub struct OpenAI {
 	pub auth: Auth,
 	pub api_url: String,
 	pub(crate) agent: Agent,
+}
+
+impl Clone for OpenAI {
+	fn clone(&self) -> Self {
+		Self { auth: self.auth.clone(), api_url: self.api_url.clone(), agent: self.agent.clone() }
+	}
 }
 
 #[allow(dead_code)]
