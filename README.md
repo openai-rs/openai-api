@@ -30,7 +30,7 @@ ___
 Add the following to your Cargo.toml file:
 
 ```toml
-openai_api_rust = "0.1.1"
+openai_api_rust = "0.1.3"
 ```
 
 Export your API key into the environment variables
@@ -43,31 +43,37 @@ Then use the crate in your Rust code:
 
 ```rust
 use openai_api_rust::*;
-use openai_api_rust::edits::*;
+use openai_api_rust::chat::*;
+use openai_api_rust::completions::*;
 
 fn main() {
     // Load API key from environment OPENAI_API_KEY.
     // You can also hadcode through `Auth::new(<your_api_key>)`, but it is not recommended.
     let auth = Auth::from_env().unwrap();
     let openai = OpenAI::new(auth, "https://api.openai.com/v1/");
-    let body = EditsBody {
-        model: "text-davinci-edit-001".to_string(),
-        temperature: None,
-        top_p: None,
+    let body = ChatBody {
+        model: "gpt-3.5-turbo".to_string(),
+        max_tokens: Some(7),
+        temperature: Some(0_f32),
+        top_p: Some(0_f32),
         n: Some(2),
-        instruction: "Fix the spelling mistakes".to_string(),
-        input: Some("What day of the wek is it?".to_string()),
+        stream: Some(false),
+        stop: None,
+        presence_penalty: None,
+        frequency_penalty: None,
+        logit_bias: None,
+        user: None,
+        messages: vec![Message {
+            role: Some("user".to_string()),
+            content: Some("Hello!".to_string()),
+        }],
     };
-    let rs = openai.edit_create(&body).unwrap();
-    let choice = rs.choices.get(0).unwrap();
-    println!("choice: {:?}", choice.text);
+    let rs = openai.chat_completion_create(&body);
+    let choice = rs.unwrap().choices;
+    let message = &choice[0].message.as_ref().unwrap();
+    let content = message.content.as_ref().unwrap();
+    assert!(content.contains("Hello"));
 }
-```
-
-Output:
-
-```bash
-choice: Some("What day of the week is it?\n")
 ```
 
 ### Use proxy
