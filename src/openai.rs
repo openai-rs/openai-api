@@ -58,7 +58,7 @@ impl OpenAI {
 			_ => {
 				log::warn!("Missing http_proxy or https_proxy");
 				None
-			}
+			},
 		};
 		if let Some(proxy) = proxy {
 			let proxy = ureq::Proxy::new(&proxy).unwrap();

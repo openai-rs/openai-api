@@ -126,21 +126,6 @@ pub struct CompletionsBody {
 	pub user: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Choice {
-	pub text: Option<String>,
-	pub index: u32,
-	pub logprobs: Option<String>,
-	pub finish_reason: Option<String>,
-	pub message: Option<Message>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Message {
-	pub role: String,
-	pub content: String,
-}
-
 pub trait CompletionsApi {
 	/// Creates a completion for the provided prompt and parameters
 	fn completion_create(&self, completions_body: &CompletionsBody) -> ApiResult<Completion>;

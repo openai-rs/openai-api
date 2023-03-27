@@ -63,10 +63,7 @@ fn main() {
         frequency_penalty: None,
         logit_bias: None,
         user: None,
-        messages: vec![Message {
-            role: "user".to_string(),
-            content: "Hello!".to_string(),
-        }],
+        messages: vec![Message { role: Role::User, content: "Hello!".to_string() }],
     };
     let rs = openai.chat_completion_create(&body);
     let choice = rs.unwrap().choices;

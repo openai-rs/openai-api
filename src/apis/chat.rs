@@ -9,10 +9,7 @@ use crate::requests::Requests;
 use crate::*;
 use serde::{Deserialize, Serialize};
 
-use super::{
-	completions::{Completion, Message},
-	CHAT_COMPLETION_CREATE,
-};
+use super::{completions::Completion, CHAT_COMPLETION_CREATE};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ChatBody {
@@ -98,10 +95,7 @@ impl ChatApi for OpenAI {
 
 #[cfg(test)]
 mod tests {
-	use crate::{
-		apis::{chat::ChatBody, completions::Message},
-		openai::new_test_openai,
-	};
+	use crate::{apis::chat::ChatBody, openai::new_test_openai, Message, Role};
 
 	use super::ChatApi;
 
@@ -120,10 +114,7 @@ mod tests {
 			frequency_penalty: None,
 			logit_bias: None,
 			user: None,
-			messages: vec![Message {
-				role: "user".to_string(),
-				content: "Hello!".to_string(),
-			}],
+			messages: vec![Message { role: Role::User, content: "Hello!".to_string() }],
 		};
 		let rs = openai.chat_completion_create(&body);
 		let choice = rs.unwrap().choices;
