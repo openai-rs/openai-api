@@ -137,8 +137,8 @@ pub struct Choice {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Message {
-	pub role: Option<String>,
-	pub content: Option<String>,
+	pub role: String,
+	pub content: String,
 }
 
 pub trait CompletionsApi {

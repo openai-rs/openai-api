@@ -121,14 +121,13 @@ mod tests {
 			logit_bias: None,
 			user: None,
 			messages: vec![Message {
-				role: Some("user".to_string()),
-				content: Some("Hello!".to_string()),
+				role: "user".to_string(),
+				content: "Hello!".to_string(),
 			}],
 		};
 		let rs = openai.chat_completion_create(&body);
 		let choice = rs.unwrap().choices;
 		let message = &choice[0].message.as_ref().unwrap();
-		let content = message.content.as_ref().unwrap();
-		assert!(content.contains("Hello"));
+		assert!(message.content.contains("Hello"));
 	}
 }
