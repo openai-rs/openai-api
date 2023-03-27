@@ -65,7 +65,7 @@ fn deal_response(response: Result<ureq::Response, ureq::Error>, sub_url: &str) -
 		Ok(resp) => {
 			let json = resp.into_json::<Json>().unwrap();
 			debug!("<== ✔️\n\tDone api: {sub_url}, resp: {json}");
-			return Ok(json);
+			Ok(json)
 		},
 		Err(err) => match err {
 			ureq::Error::Status(status, response) => {
@@ -75,7 +75,7 @@ fn deal_response(response: Result<ureq::Response, ureq::Error>, sub_url: &str) -
 			},
 			ureq::Error::Transport(e) => {
 				error!("<== ❌\n\tError api: {sub_url}, error: {:?}", e.to_string());
-				return Err(Error::RequestError(e.to_string()));
+				Err(Error::RequestError(e.to_string()))
 			},
 		},
 	}

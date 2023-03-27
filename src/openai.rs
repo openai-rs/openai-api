@@ -1,3 +1,4 @@
+use std::time::Duration;
 use serde::{Deserialize, Serialize};
 use ureq::{Agent, AgentBuilder};
 
@@ -42,7 +43,7 @@ impl Clone for OpenAI {
 #[allow(dead_code)]
 impl OpenAI {
 	pub fn new(auth: Auth, api_url: &str) -> OpenAI {
-		OpenAI { auth, api_url: api_url.to_string(), agent: AgentBuilder::new().build() }
+		OpenAI { auth, api_url: api_url.to_string(), agent: AgentBuilder::new().timeout(Duration::from_secs(30)).build() }
 	}
 
 	pub fn set_proxy(mut self, proxy: &str) -> OpenAI {
@@ -61,7 +62,7 @@ impl OpenAI {
 			},
 		};
 		if let Some(proxy) = proxy {
-			let proxy = ureq::Proxy::new(&proxy).unwrap();
+			let proxy = ureq::Proxy::new(proxy).unwrap();
 			self.agent = ureq::AgentBuilder::new().proxy(proxy).build();
 		}
 		self

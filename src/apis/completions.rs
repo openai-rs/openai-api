@@ -135,7 +135,7 @@ impl CompletionsApi for OpenAI {
 	fn completion_create(&self, completions_body: &CompletionsBody) -> ApiResult<Completion> {
 		let request_body = serde_json::to_value(completions_body).unwrap();
 		let res = self.post(COMPLETION_CREATE, request_body)?;
-		let completion: Completion = serde_json::from_value(res.clone()).unwrap();
+		let completion: Completion = serde_json::from_value(res).unwrap();
 		Ok(completion)
 	}
 }

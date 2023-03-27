@@ -35,7 +35,7 @@ pub struct Embeddings {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct EmbeddingData {
 	object: Option<String>,
-	embedding: Option<Vec<f64>>,
+	pub embedding: Option<Vec<f64>>,
 	index: i32,
 }
 
@@ -48,7 +48,7 @@ impl EmbeddingsApi for OpenAI {
 	fn embeddings_create(&self, embeddings_body: &EmbeddingsBody) -> ApiResult<Embeddings> {
 		let request_body = serde_json::to_value(embeddings_body).unwrap();
 		let res = self.post(EMBEDDINGS_CREATE, request_body)?;
-		let embeddings: Embeddings = serde_json::from_value(res.clone()).unwrap();
+		let embeddings: Embeddings = serde_json::from_value(res).unwrap();
 		Ok(embeddings)
 	}
 }
