@@ -49,10 +49,26 @@ pub struct Message {
 	pub content: String,
 }
 
+impl Clone for Message {
+	fn clone(&self) -> Self {
+		Self { role: self.role.clone(), content: self.content.clone() }
+	}
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Role {
 	System,
 	Assistant,
 	User,
+}
+
+impl Clone for Role {
+	fn clone(&self) -> Self {
+		match self {
+			Self::System => Self::System,
+			Self::Assistant => Self::Assistant,
+			Self::User => Self::User,
+		}
+	}
 }
