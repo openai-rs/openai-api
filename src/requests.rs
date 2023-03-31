@@ -1,23 +1,19 @@
 use crate::openai::OpenAI;
 use crate::*;
-use multipart::client::lazy::Multipart;
 
 #[cfg(not(test))]
-use log::{debug, error, info};
+use log::{debug, error};
 
 #[cfg(test)]
 use std::{eprintln as error, println as info, println as debug};
 
 pub trait Requests {
 	fn post(&self, sub_url: &str, body: Json) -> ApiResult<Json>;
-	fn post_multipart(&self, sub_url: &str, multipart: Multipart) -> ApiResult<Json>;
 	fn get(&self, sub_url: &str) -> ApiResult<Json>;
 }
 
 impl Requests for OpenAI {
 	fn post(&self, sub_url: &str, body: Json) -> ApiResult<Json> {
-		info!("===> 🚀\n\tPost api: {sub_url}, body: {body}");
-
 		let response = self
 			.agent
 			.post(&(self.api_url.clone() + sub_url))
@@ -30,8 +26,6 @@ impl Requests for OpenAI {
 	}
 
 	fn get(&self, sub_url: &str) -> ApiResult<Json> {
-		info!("===> 🚀\n\tGet api: {sub_url}");
-
 		let response = self
 			.agent
 			.get(&(self.api_url.clone() + sub_url))
@@ -39,22 +33,6 @@ impl Requests for OpenAI {
 			.set("OpenAI-Organization", &self.auth.organization.clone().unwrap_or_default())
 			.set("Authorization", &format!("Bearer {}", self.auth.api_key))
 			.call();
-
-		deal_response(response, sub_url)
-	}
-
-	fn post_multipart(&self, sub_url: &str, mut multipart: Multipart) -> ApiResult<Json> {
-		info!("===> 🚀\n\tPost multipart api: {sub_url}, multipart: {:?}", multipart);
-
-		let form_data = multipart.prepare().unwrap();
-
-		let response = self
-			.agent
-			.post(&(self.api_url.clone() + sub_url))
-			.set("Content-Type", &format!("multipart/form-data; boundary={}", form_data.boundary()))
-			.set("OpenAI-Organization", &self.auth.organization.clone().unwrap_or_default())
-			.set("Authorization", &format!("Bearer {}", self.auth.api_key))
-			.send(form_data);
 
 		deal_response(response, sub_url)
 	}

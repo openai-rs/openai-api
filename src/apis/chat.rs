@@ -88,7 +88,7 @@ impl ChatApi for OpenAI {
 	fn chat_completion_create(&self, chat_body: &ChatBody) -> ApiResult<Completion> {
 		let request_body = serde_json::to_value(chat_body).unwrap();
 		let res = self.post(CHAT_COMPLETION_CREATE, request_body)?;
-		let completion: Completion = serde_json::from_value(res.clone()).unwrap();
+		let completion: Completion = serde_json::from_value(res).unwrap();
 		Ok(completion)
 	}
 }
