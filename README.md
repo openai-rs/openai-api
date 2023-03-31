@@ -30,7 +30,7 @@ ___
 Add the following to your Cargo.toml file:
 
 ```toml
-openai_api_rust = "0.1.3"
+openai_api_rust = "0.1.5"
 ```
 
 Export your API key into the environment variables
@@ -78,8 +78,7 @@ Load proxy from env
 
 ```rust
 let openai = OpenAI::new(auth, "https://api.openai.com/v1/")
-        .use_env_proxy()
-        .unwrap();
+        .use_env_proxy();
 ```
 
 Set the proxy manually
