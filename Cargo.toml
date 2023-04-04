@@ -1,11 +1,11 @@
 [package]
 name = "openai_api_rust"
-version = "0.1.7"
+version = "0.1.8"
 authors = ["i@guantong.dev"]
 edition = "2021"
 license = "MIT"
 homepage = "https://github.com/openai-rs/openai-api"
-description = "OpenAI api for rust language"
+description = "A very simple Rust library for OpenAI API, free from complex async operations and redundant dependencies."
 keywords = ["openai_api", "openai", "openai-api"]
 categories = ["api-bindings"]
 
