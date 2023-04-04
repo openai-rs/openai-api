@@ -1,10 +1,10 @@
 [package]
 name = "openai_api_rust"
-version = "0.1.5"
+version = "0.1.6"
 authors = ["i@guantong.dev"]
 edition = "2021"
 license = "MIT"
-homepage = "https://github.com/openai-rs/openapi-api"
+homepage = "https://github.com/openai-rs/openai-api"
 description = "OpenAI api for rust language"
 keywords = ["openai_api", "openai", "openai-api"]
 categories = ["api-bindings"]
