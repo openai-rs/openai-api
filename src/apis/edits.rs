@@ -48,7 +48,7 @@ mod tests {
 		let openai = new_test_openai();
 		let body = EditsBody {
 			model: "text-davinci-edit-001".to_string(),
-			temperature: None,
+			temperature: Some(1.0),
 			top_p: None,
 			n: Some(2),
 			instruction: "Fix the spelling mistakes".to_string(),

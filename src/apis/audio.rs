@@ -36,7 +36,7 @@ pub struct AudioBody {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Audio {
-	text: Option<String>,
+	pub text: Option<String>,
 }
 
 pub trait AudioApi {

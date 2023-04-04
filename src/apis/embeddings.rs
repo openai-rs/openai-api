@@ -34,9 +34,9 @@ pub struct Embeddings {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct EmbeddingData {
-	object: Option<String>,
-	embedding: Option<Vec<f64>>,
-	index: i32,
+	pub object: Option<String>,
+	pub embedding: Option<Vec<f64>>,
+	pub index: i32,
 }
 
 pub trait EmbeddingsApi {

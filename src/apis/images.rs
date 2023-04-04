@@ -45,13 +45,13 @@ pub struct ImagesEditBody {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Images {
-	created: u64,
-	data: Option<Vec<ImageData>>,
+	pub created: u64,
+	pub data: Option<Vec<ImageData>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ImageData {
-	url: String,
+	pub url: String,
 }
 
 pub trait ImagesApi {
