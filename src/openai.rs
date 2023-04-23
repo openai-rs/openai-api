@@ -42,8 +42,8 @@ impl Clone for OpenAI {
 
 #[allow(dead_code)]
 impl OpenAI {
-	pub fn new(auth: Auth, api_url: &str) -> OpenAI {
-		OpenAI { auth, api_url: api_url.to_string(), agent: AgentBuilder::new().timeout(Duration::from_secs(30)).build() }
+	pub fn new(auth: Auth, api_url: &str, timeout: Duration) -> OpenAI {
+		OpenAI { auth, api_url: api_url.to_string(), agent: AgentBuilder::new().timeout(timeout).build() }
 	}
 
 	pub fn set_proxy(mut self, proxy: &str) -> OpenAI {
@@ -72,5 +72,5 @@ impl OpenAI {
 #[cfg(test)]
 pub fn new_test_openai() -> OpenAI {
 	let auth = Auth::from_env().unwrap();
-	OpenAI::new(auth, "https://api.openai.com/v1/").use_env_proxy()
+	OpenAI::new(auth, "https://api.openai.com/v1/", Duration::from_secs(30)).use_env_proxy()
 }
