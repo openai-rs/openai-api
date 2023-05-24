@@ -1,5 +1,5 @@
-use std::time::Duration;
 use serde::{Deserialize, Serialize};
+use std::time::Duration;
 use ureq::{Agent, AgentBuilder};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -31,19 +31,32 @@ impl Auth {
 pub struct OpenAI {
 	pub auth: Auth,
 	pub api_url: String,
+	pub api_version: String,
 	pub(crate) agent: Agent,
 }
 
 impl Clone for OpenAI {
 	fn clone(&self) -> Self {
-		Self { auth: self.auth.clone(), api_url: self.api_url.clone(), agent: self.agent.clone() }
+		Self {
+			auth: self.auth.clone(),
+			api_url: self.api_url.clone(),
+			api_version: self.api_version.clone(),
+			agent: self.agent.clone(),
+		}
 	}
 }
 
 #[allow(dead_code)]
 impl OpenAI {
-	pub fn new(auth: Auth, api_url: &str, timeout: Duration) -> OpenAI {
-		OpenAI { auth, api_url: api_url.to_string(), agent: AgentBuilder::new().timeout(timeout).build() }
+	// azure openai:
+	// api_url/chat/completions?api-version=2023-03-15-preview
+	pub fn new(auth: Auth, api_url: &str, api_version: &str, timeout: Duration) -> OpenAI {
+		OpenAI {
+			auth,
+			api_url: api_url.to_string(),
+			api_version: api_version.to_string(),
+			agent: AgentBuilder::new().timeout(timeout).build(),
+		}
 	}
 
 	pub fn set_proxy(mut self, proxy: &str) -> OpenAI {
@@ -72,5 +85,5 @@ impl OpenAI {
 #[cfg(test)]
 pub fn new_test_openai() -> OpenAI {
 	let auth = Auth::from_env().unwrap();
-	OpenAI::new(auth, "https://api.openai.com/v1/", Duration::from_secs(30)).use_env_proxy()
+	OpenAI::new(auth, "https://api.openai.com/v1/", "", Duration::from_secs(30)).use_env_proxy()
 }

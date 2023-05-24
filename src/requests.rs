@@ -5,7 +5,7 @@ use crate::*;
 use log::{debug, error};
 
 #[cfg(test)]
-use std::{eprintln as error, println as info, println as debug};
+use std::{eprintln as error, println as debug};
 
 pub trait Requests {
 	fn post(&self, sub_url: &str, body: Json) -> ApiResult<Json>;
@@ -14,9 +14,16 @@ pub trait Requests {
 
 impl Requests for OpenAI {
 	fn post(&self, sub_url: &str, body: Json) -> ApiResult<Json> {
+		let path = if self.api_version.is_empty() {
+			self.api_url.clone() + sub_url
+		} else {
+			// azure openai:
+			// api_url/chat/completions?api-version=2023-03-15-preview
+			self.api_url.clone() + sub_url + "?api-version=" + &*self.api_version.clone()
+		};
 		let response = self
 			.agent
-			.post(&(self.api_url.clone() + sub_url))
+			.post(&path)
 			.set("Content-Type", "application/json")
 			.set("OpenAI-Organization", &self.auth.organization.clone().unwrap_or_default())
 			.set("Authorization", &format!("Bearer {}", self.auth.api_key))
@@ -26,9 +33,16 @@ impl Requests for OpenAI {
 	}
 
 	fn get(&self, sub_url: &str) -> ApiResult<Json> {
+		let path = if self.api_version.is_empty() {
+			self.api_url.clone() + sub_url
+		} else {
+			// azure openai:
+			// api_url/chat/completions?api-version=2023-03-15-preview
+			self.api_url.clone() + sub_url + "?api-version=" + &*self.api_version.clone()
+		};
 		let response = self
 			.agent
-			.get(&(self.api_url.clone() + sub_url))
+			.get(&path)
 			.set("Content-Type", "application/json")
 			.set("OpenAI-Organization", &self.auth.organization.clone().unwrap_or_default())
 			.set("Authorization", &format!("Bearer {}", self.auth.api_key))
