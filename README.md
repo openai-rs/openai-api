@@ -1,9 +1,9 @@
 # OpenAI API for Rust
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/openai-rs/openai-api/rust.yml?style=flat-square)
-![Crates.io](https://img.shields.io/crates/v/openai_api_rust?style=flat-square)
-![Crates.io](https://img.shields.io/crates/d/openai_api_rust?style=flat-square)
-![GitHub](https://img.shields.io/github/license/openai-rs/openai-api?style=flat-square)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/openai-rs/openai-api/rust.yml?style=flat-square)](https://github.com/openai-rs/openai-api/actions)
+[![Crates.io](https://img.shields.io/crates/v/openai_api_rust?style=flat-square)](https://crates.io/crates/openai_api_rust/versions)
+[![Crates.io](https://img.shields.io/crates/d/openai_api_rust?style=flat-square)](https://crates.io/crates/openai_api_rust)
+[![GitHub](https://img.shields.io/github/license/openai-rs/openai-api?style=flat-square)](https://github.com/openai-rs/openai-api/blob/main/LICENSE)
 
 A community-maintained library provides a simple and convenient way to interact with the OpenAI API.
 No complex async and redundant dependencies.
