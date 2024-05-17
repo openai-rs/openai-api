@@ -18,7 +18,7 @@ use super::{Usage, COMPLETION_CREATE};
 pub struct Completion {
 	pub id: Option<String>,
 	pub object: Option<String>,
-	pub created: u64,
+	pub created: Option<u64>,
 	pub model: Option<String>,
 	pub choices: Vec<Choice>,
 	pub usage: Usage,
