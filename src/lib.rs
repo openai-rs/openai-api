@@ -60,6 +60,7 @@ use std::fmt::{Display, Formatter, self};
 pub use apis::*;
 pub mod openai;
 pub use openai::*;
+mod mpart;
 mod requests;
 
 use log as _;

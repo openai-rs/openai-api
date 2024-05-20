@@ -4,9 +4,9 @@
 //! Images API
 
 use super::{IMAGES_CREATE, IMAGES_EDIT, IMAGES_VARIATIONS};
+use crate::mpart::Mpart as Multipart;
 use crate::requests::Requests;
 use crate::*;
-use multipart::client::lazy::Multipart;
 use serde::{Deserialize, Serialize};
 use std::{fs::File, str};
 

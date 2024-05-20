@@ -4,7 +4,7 @@
 
 use std::fs::File;
 
-use multipart::client::lazy::Multipart;
+use crate::mpart::Mpart as Multipart;
 use serde::{Deserialize, Serialize};
 
 use crate::requests::Requests;

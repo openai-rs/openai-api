@@ -1,6 +1,7 @@
+use crate::mpart::Mpart as Multipart;
+
 use crate::openai::OpenAI;
 use crate::*;
-use multipart::client::lazy::Multipart;
 
 #[cfg(not(test))]
 use log::{debug, error, info};
