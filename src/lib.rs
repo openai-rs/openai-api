@@ -66,8 +66,6 @@ use log as _;
 pub type Json = serde_json::Value;
 pub type ApiResult<T> = Result<T, Error>;
 
-pub use openai::*;
-
 #[derive(Debug)]
 pub enum Error {
 	/// An Error returned by the API
