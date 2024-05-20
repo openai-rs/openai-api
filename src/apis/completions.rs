@@ -170,6 +170,6 @@ mod tests {
 		let rs = openai.completion_create(&body);
 		let choice = rs.unwrap().choices;
 		let text = &choice[0].text.as_ref().unwrap();
-		assert!(text.contains("see"));
+		assert!(text.contains("this"));
 	}
 }
