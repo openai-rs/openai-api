@@ -105,6 +105,6 @@ mod tests {
 	fn test_get() {
 		let openai = openai::new_test_openai();
 		let resp = openai.get("models").unwrap();
-		assert!(resp.to_string().contains("babbage"));
+		assert!(resp.to_string().contains("babbage-002"));
 	}
 }

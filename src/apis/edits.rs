@@ -47,7 +47,7 @@ mod tests {
 	fn test_edit_create() {
 		let openai = new_test_openai();
 		let body = EditsBody {
-			model: "text-davinci-edit-001".to_string(),
+			model: "gpt-4o".to_string(),
 			temperature: Some(1.0),
 			top_p: None,
 			n: Some(2),

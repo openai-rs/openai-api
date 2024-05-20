@@ -79,7 +79,7 @@ mod tests {
 	#[test]
 	fn test_get_model() {
 		let openai = new_test_openai();
-		let model = openai.models_retrieve("babbage").unwrap();
-		assert_eq!("babbage", model.id);
+		let model = openai.models_retrieve("babbage-002").unwrap();
+		assert_eq!("babbage-002", model.id);
 	}
 }
