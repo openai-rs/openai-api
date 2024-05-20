@@ -57,6 +57,12 @@ pub struct ImageData {
 pub trait ImagesApi {
 	/// Given a prompt and/or an input image, the model will generate a new image.
 	fn image_create(&self, images_body: &ImagesBody) -> ApiResult<Images>;
+	/// generates multipart data for image fns
+	fn image_build_send_data_from_body(
+		&self,
+		images_edit_body: ImagesEditBody,
+		url: &str,
+	) -> ApiResult<Images>;
 	/// Creates an edited or extended image given an original image and a prompt.
 	fn image_edit(&self, images_edit_body: ImagesEditBody) -> ApiResult<Images>;
 	/// Creates a variation of a given image.
@@ -71,10 +77,16 @@ impl ImagesApi for OpenAI {
 		Ok(images)
 	}
 
-	fn image_edit(&self, images_edit_body: ImagesEditBody) -> ApiResult<Images> {
+	fn image_build_send_data_from_body(
+		&self,
+		images_edit_body: ImagesEditBody,
+		url: &str,
+	) -> ApiResult<Images> {
 		let mut send_data = Multipart::new();
 
-		send_data.add_text("prompt", images_edit_body.images_body.prompt);
+		if IMAGES_EDIT == url {
+			send_data.add_text("prompt", images_edit_body.images_body.prompt);
+		}
 		if let Some(n) = images_edit_body.images_body.n {
 			send_data.add_text("n", n.to_string());
 		}
@@ -92,31 +104,17 @@ impl ImagesApi for OpenAI {
 		}
 		send_data.add_stream("image", images_edit_body.image, Some("blob"), Some(mime::IMAGE_PNG));
 
-		let res = self.post_multipart(IMAGES_EDIT, send_data)?;
+		let res = self.post_multipart(url, send_data)?;
 		let images: Images = serde_json::from_value(res.clone()).unwrap();
 		Ok(images)
 	}
 
+	fn image_edit(&self, images_edit_body: ImagesEditBody) -> ApiResult<Images> {
+		self.image_build_send_data_from_body(images_edit_body, IMAGES_EDIT)
+	}
+
 	fn image_variation(&self, images_edit_body: ImagesEditBody) -> ApiResult<Images> {
-		let mut send_data = Multipart::new();
-
-		if let Some(n) = images_edit_body.images_body.n {
-			send_data.add_text("n", n.to_string());
-		}
-		if let Some(size) = images_edit_body.images_body.size {
-			send_data.add_text("size", size.to_string());
-		}
-		if let Some(response_format) = images_edit_body.images_body.response_format {
-			send_data.add_text("response_format", response_format.to_string());
-		}
-		if let Some(user) = images_edit_body.images_body.user {
-			send_data.add_text("user", user.to_string());
-		}
-		send_data.add_stream("image", images_edit_body.image, Some("blob"), Some(mime::IMAGE_PNG));
-
-		let res = self.post_multipart(IMAGES_VARIATIONS, send_data)?;
-		let images: Images = serde_json::from_value(res.clone()).unwrap();
-		Ok(images)
+		self.image_build_send_data_from_body(images_edit_body, IMAGES_VARIATIONS)
 	}
 }
 
