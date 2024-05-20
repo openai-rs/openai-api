@@ -4,27 +4,10 @@ use rand::Rng;
 use std::borrow::Cow;
 use std::error::Error;
 use std::fmt;
-use std::fs::File;
 use std::io;
 use std::io::Cursor;
 use std::io::Read;
 use std::io::Write;
-use std::path::Path;
-
-macro_rules! try_lazy (
-    ($field:expr, $try:expr) => (
-        match $try {
-            Ok(ok) => ok,
-            Err(e) => return Err(LazyError::with_field($field.into(), e)),
-        }
-    );
-    ($try:expr) => (
-        match $try {
-            Ok(ok) => ok,
-            Err(e) => return Err(LazyError::without_field(e)),
-        }
-    )
-);
 
 #[derive(Debug)]
 struct Field<'n, 'd> {
@@ -34,7 +17,6 @@ struct Field<'n, 'd> {
 
 enum Data<'n, 'd> {
 	Text(Cow<'d, str>),
-	File(Cow<'d, Path>),
 	Stream(Stream<'n, 'd>),
 }
 
@@ -42,7 +24,6 @@ impl<'n, 'd> fmt::Debug for Data<'n, 'd> {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		match *self {
 			Data::Text(ref text) => write!(f, "Data::Text({:?})", text),
-			Data::File(ref path) => write!(f, "Data::File({:?})", path),
 			Data::Stream(_) => f.write_str("Data::Stream(Box<Read>)"),
 		}
 	}
@@ -70,20 +51,6 @@ pub struct LazyError<'a, E> {
 	pub error: E,
 	/// Private field for back-compat.
 	_priv: (),
-}
-
-impl<'a, E> LazyError<'a, E> {
-	fn without_field<E_: Into<E>>(error: E_) -> Self {
-		LazyError { field_name: None, error: error.into(), _priv: () }
-	}
-
-	fn with_field<E_: Into<E>>(field_name: Cow<'a, str>, error: E_) -> Self {
-		LazyError { field_name: Some(field_name), error: error.into(), _priv: () }
-	}
-
-	fn transform_err<E_: From<E>>(self) -> LazyError<'a, E_> {
-		LazyError { field_name: self.field_name, error: self.error.into(), _priv: () }
-	}
 }
 
 /// Take `self.error`, discarding `self.field_name`.
@@ -131,20 +98,6 @@ impl<'n, 'd> Mpart<'n, 'd> {
 		self
 	}
 
-	/// Add a file field to this request.
-	///
-	/// ### Note
-	/// Does not check if `path` exists.
-	pub fn add_file<N, P>(&mut self, name: N, path: P) -> &mut Self
-	where
-		N: Into<Cow<'n, str>>,
-		P: IntoCowPath<'d>,
-	{
-		self.fields.push(Field { name: name.into(), data: Data::File(path.into_cow_path()) });
-
-		self
-	}
-
 	/// Add a generic stream field to this request,
 	pub fn add_stream<N, R, F>(
 		&mut self,
@@ -170,26 +123,6 @@ impl<'n, 'd> Mpart<'n, 'd> {
 		self
 	}
 
-	/// Convert `req` to `HttpStream`, write out the fields in this request, and finish the
-	/// request, returning the response if successful, or the first error encountered.
-	///
-	/// If any files were added by path they will now be opened for reading.
-	/*pub fn send<R: HttpRequest>(
-		&mut self,
-		mut req: R,
-	) -> Result<<R::Stream as HttpStream>::Response, LazyError<'n, <R::Stream as HttpStream>::Error>>
-	{
-		let mut prepared = self.prepare().map_err(LazyError::transform_err)?;
-
-		req.apply_headers(prepared.boundary(), prepared.content_len());
-
-		let mut stream = try_lazy!(req.open_stream());
-
-		try_lazy!(io::copy(&mut prepared, &mut stream));
-
-		stream.finish().map_err(LazyError::without_field)
-	}*/
-
 	/// Export the multipart data contained in this lazy request as an adaptor which implements `Read`.
 	///
 	/// During this step, if any files were added by path then they will be opened for reading
@@ -212,7 +145,6 @@ pub struct PreparedFields<'d> {
 	text_data: Cursor<Vec<u8>>,
 	streams: Vec<PreparedField<'d>>,
 	end_boundary: Cursor<String>,
-	content_len: Option<u64>,
 }
 
 impl<'d> PreparedFields<'d> {
@@ -225,9 +157,6 @@ impl<'d> PreparedFields<'d> {
 
 		let mut text_data = Vec::new();
 		let mut streams = Vec::new();
-		let mut content_len = 0u64;
-		let mut use_len = true;
-
 		for field in fields.drain(..) {
 			match field.data {
 				Data::Text(text) => write!(
@@ -237,14 +166,7 @@ impl<'d> PreparedFields<'d> {
 					boundary, field.name, text
 				)
 				.unwrap(),
-				Data::File(file) => {
-					let (stream, len) = PreparedField::from_path(field.name, &file, &boundary)?;
-					content_len += len;
-					streams.push(stream);
-				},
 				Data::Stream(stream) => {
-					use_len = false;
-
 					streams.push(PreparedField::from_stream(
 						&field.name,
 						&boundary,
@@ -263,13 +185,10 @@ impl<'d> PreparedFields<'d> {
 			boundary.push_str("--");
 		}
 
-		content_len += boundary.len() as u64;
-
 		Ok(PreparedFields {
 			text_data: Cursor::new(text_data),
 			streams,
 			end_boundary: Cursor::new(boundary),
-			content_len: if use_len { Some(content_len) } else { None },
 		})
 	}
 
@@ -282,34 +201,7 @@ impl<'d> PreparedFields<'d> {
 	}
 }
 
-fn mime_filename(path: &Path) -> (Mime, Option<&str>) {
-	let content_type = ::mime_guess::from_path(path);
-	let filename = opt_filename(path);
-	(content_type.first_or_octet_stream(), filename)
-}
-
-fn opt_filename(path: &Path) -> Option<&str> {
-	path.file_name().and_then(|filename| filename.to_str())
-}
-
 impl<'d> PreparedField<'d> {
-	fn from_path<'n>(
-		name: Cow<'n, str>,
-		path: &Path,
-		boundary: &str,
-	) -> Result<(Self, u64), LazyIoError<'n>> {
-		let (content_type, filename) = mime_filename(&path);
-
-		let file = try_lazy!(name, File::open(path));
-		let content_len = try_lazy!(name, file.metadata()).len();
-
-		let stream = Self::from_stream(&name, boundary, &content_type, filename, Box::new(file));
-
-		let content_len = content_len + (stream.header.get_ref().len() as u64);
-
-		Ok((stream, content_len))
-	}
-
 	fn from_stream(
 		name: &str,
 		boundary: &str,
@@ -387,11 +279,6 @@ impl<'d> fmt::Debug for PreparedField<'d> {
 			.field("stream", &"Box<Read>")
 			.finish()
 	}
-}
-
-pub trait IntoCowPath<'a> {
-	/// Self-explanatory, hopefully
-	fn into_cow_path(self) -> Cow<'a, Path>;
 }
 
 fn cursor_at_end<T: AsRef<[u8]>>(cursor: &Cursor<T>) -> bool {
