@@ -11,7 +11,7 @@
 //! use openai_api_rust::*;
 //! use openai_api_rust::chat::*;
 //! use openai_api_rust::completions::*;
-//! 
+//!
 //! fn main() {
 //!     // Load API key from environment OPENAI_API_KEY.
 //!     // You can also hadcode through `Auth::new(<your_api_key>)`, but it is not recommended.
@@ -37,37 +37,34 @@
 //!     assert!(message.content.contains("Hello"));
 //! }
 //! ```
-//! 
+//!
 //! ## Use proxy
-//! 
+//!
 //! ```rust
 //! // Load proxy from env
 //! let openai = OpenAI::new(auth, "https://api.openai.com/v1/")
 //!        .use_env_proxy();
-//! 
+//!
 //! // Set the proxy manually
 //! let openai = OpenAI::new(auth, "https://api.openai.com/v1/")
 //!        .set_proxy("http://127.0.0.1:1080");
 //! ```
 
-
-
 #![warn(unused_crate_dependencies)]
 
 pub mod apis;
-use std::fmt::{Display, Formatter, self};
+use std::fmt::{self, Display, Formatter};
 
 pub use apis::*;
 pub mod openai;
 pub use openai::*;
+mod mpart;
 mod requests;
 
 use log as _;
 
 pub type Json = serde_json::Value;
 pub type ApiResult<T> = Result<T, Error>;
-
-pub use openai::*;
 
 #[derive(Debug)]
 pub enum Error {
@@ -78,10 +75,10 @@ pub enum Error {
 }
 
 impl Display for Error {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        match self {
-            Error::ApiError(msg) => write!(f, "API error: {}", msg),
-            Error::RequestError(msg) => write!(f, "Request error: {}", msg),
-        }
-    }
+	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+		match self {
+			Error::ApiError(msg) => write!(f, "API error: {}", msg),
+			Error::RequestError(msg) => write!(f, "Request error: {}", msg),
+		}
+	}
 }

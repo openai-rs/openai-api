@@ -19,23 +19,6 @@ pub struct Model {
 	pub id: String,
 	pub object: Option<String>,
 	pub owned_by: Option<String>,
-	pub permission: Vec<Permission>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Permission {
-	pub id: String,
-	pub object: Option<String>,
-	pub created: u64,
-	pub allow_create_engine: bool,
-	pub allow_sampling: bool,
-	pub allow_logprobs: bool,
-	pub allow_search_indices: bool,
-	pub allow_view: bool,
-	pub allow_fine_tuning: bool,
-	pub organization: Option<String>,
-	pub group: Option<String>,
-	pub is_blocking: bool,
 }
 
 pub trait ModelsApi {
@@ -79,7 +62,7 @@ mod tests {
 	#[test]
 	fn test_get_model() {
 		let openai = new_test_openai();
-		let model = openai.models_retrieve("babbage").unwrap();
-		assert_eq!("babbage", model.id);
+		let model = openai.models_retrieve("babbage-002").unwrap();
+		assert_eq!("babbage-002", model.id);
 	}
 }

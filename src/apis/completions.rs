@@ -150,7 +150,7 @@ mod tests {
 	fn test_completions() {
 		let openai = new_test_openai();
 		let body = CompletionsBody {
-			model: "babbage".to_string(),
+			model: "babbage-002".to_string(),
 			prompt: Some(vec!["Say this is a test".to_string()]),
 			suffix: None,
 			max_tokens: Some(7),
@@ -170,6 +170,6 @@ mod tests {
 		let rs = openai.completion_create(&body);
 		let choice = rs.unwrap().choices;
 		let text = &choice[0].text.as_ref().unwrap();
-		assert!(text.contains("of the new system"));
+		assert!(text.contains("this"));
 	}
 }
