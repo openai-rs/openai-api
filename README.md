@@ -30,7 +30,7 @@ ___
 Add the following to your Cargo.toml file:
 
 ```toml
-openai_api_rust = "0.1.8"
+openai_api_rust = "0.1.9"
 ```
 
 Export your API key into the environment variables
