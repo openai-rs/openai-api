@@ -12,6 +12,8 @@ use std::{fs::File, str};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ImagesBody {
+	#[serde(skip_serializing_if = "Option::is_none")]
+	pub model: Option<String>,
 	/// A text description of the desired image(s). The maximum length is 1000 characters.
 	pub prompt: String,
 	/// The number of images to generate. Must be between 1 and 10.
@@ -22,6 +24,17 @@ pub struct ImagesBody {
 	/// Defaults to 1024x1024
 	#[serde(skip_serializing_if = "Option::is_none")]
 	pub size: Option<String>,
+	/// The style of the generated images. Must be one of vivid or natural.
+	/// Vivid causes the model to lean towards generating hyper-real and dramatic images.
+	/// Natural causes the model to produce more natural, less hyper-real looking images.
+	/// This param is only supported for dall-e-3.
+	#[serde(skip_serializing_if = "Option::is_none")]
+	pub style: Option<String>,
+	/// The quality of the image that will be generated.
+	/// hd creates images with finer details and greater consistency across the image.
+	/// This param is only supported for dall-e-3.
+	#[serde(skip_serializing_if = "Option::is_none")]
+	pub quality: Option<String>,
 	/// The format in which the generated images are returned. Must be one of url or b64_json.
 	/// Defaults to url
 	#[serde(skip_serializing_if = "Option::is_none")]
@@ -84,6 +97,9 @@ impl ImagesApi for OpenAI {
 	) -> ApiResult<Images> {
 		let mut send_data = Multipart::new();
 
+		if let Some(model) = images_edit_body.images_body.model {
+			send_data.add_text("model", model.to_string());
+		}
 		if IMAGES_EDIT == url {
 			send_data.add_text("prompt", images_edit_body.images_body.prompt);
 		}
@@ -92,6 +108,12 @@ impl ImagesApi for OpenAI {
 		}
 		if let Some(size) = images_edit_body.images_body.size {
 			send_data.add_text("size", size.to_string());
+		}
+		if let Some(style) = images_edit_body.images_body.style {
+			send_data.add_text("style", style.to_string());
+		}
+		if let Some(quality) = images_edit_body.images_body.quality {
+			send_data.add_text("quality", quality.to_string());
 		}
 		if let Some(response_format) = images_edit_body.images_body.response_format {
 			send_data.add_text("response_format", response_format.to_string());
@@ -131,9 +153,12 @@ mod tests {
 	fn test_image_create() {
 		let openai = new_test_openai();
 		let body = ImagesBody {
+			model: None,
 			prompt: "A cute baby sea otter".to_string(),
 			n: Some(2),
 			size: Some("1024x1024".to_string()),
+			style: Some("vivid".to_string()),
+			quality: Some("standard".to_string()),
 			response_format: None,
 			user: None,
 		};
@@ -149,9 +174,12 @@ mod tests {
 		let file = File::open("test_files/image.png").unwrap();
 		let multipart = ImagesEditBody {
 			images_body: ImagesBody {
+				model: None,
 				prompt: "A cute baby sea otter wearing a beret".to_string(),
 				n: Some(2),
 				size: Some("1024x1024".to_string()),
+				style: Some("vivid".to_string()),
+				quality: Some("standard".to_string()),
 				response_format: None,
 				user: None,
 			},
@@ -170,9 +198,12 @@ mod tests {
 		let file = File::open("test_files/image.png").unwrap();
 		let multipart = ImagesEditBody {
 			images_body: ImagesBody {
+				model: None,
 				prompt: "".to_string(),
 				n: Some(2),
 				size: Some("1024x1024".to_string()),
+				style: Some("vivid".to_string()),
+				quality: Some("standard".to_string()),
 				response_format: None,
 				user: None,
 			},
