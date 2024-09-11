@@ -51,7 +51,9 @@ pub struct Images {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ImageData {
-	pub url: String,
+	pub url: Option<String>,
+	pub revised_prompt: Option<String>,
+	pub b64_json: Option<String>,
 }
 
 pub trait ImagesApi {
