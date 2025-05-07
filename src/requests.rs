@@ -70,7 +70,12 @@ fn deal_response(response: Result<ureq::Response, ureq::Error>, sub_url: &str) -
 		},
 		Err(err) => match err {
 			ureq::Error::Status(status, response) => {
-				let error_msg = response.into_json::<Json>().unwrap();
+				let mut error_msg = response
+					.into_json::<Json>()
+					.unwrap_or_else(|x| serde_json::Value::String(x.to_string()));
+				if let serde_json::Value::String(ref mut s) = error_msg {
+					*s = format!("status: {}, msg: {}", status, s);
+				}
 				error!("<== ❌\n\tError api: {sub_url}, status: {status}, error: {error_msg}");
 				return Err(Error::ApiError(format!("{error_msg}")));
 			},
