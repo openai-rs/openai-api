@@ -48,7 +48,7 @@ use openai_api_rust::completions::*;
 
 fn main() {
     // Load API key from environment OPENAI_API_KEY.
-    // You can also hadcode through `Auth::new(<your_api_key>)`, but it is not recommended.
+    // You can also hardcode through `Auth::new(<your_api_key>)`, but it is not recommended.
     let auth = Auth::from_env().unwrap();
     let openai = OpenAI::new(auth, "https://api.openai.com/v1/");
     let body = ChatBody {
