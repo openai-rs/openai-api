@@ -50,7 +50,7 @@ pub struct ChatBody {
 	/// The total length of input tokens and generated tokens is limited by the model's context length.
 	/// Defaults to inf
 	#[serde(skip_serializing_if = "Option::is_none")]
-	pub max_tokens: Option<i32>,
+	pub max_completion_tokens: Option<i32>,
 	/// Number between -2.0 and 2.0.
 	/// Positive values penalize new tokens based on whether they appear in the text so far,
 	/// increasing the model's likelihood to talk about new topics.
@@ -104,7 +104,7 @@ mod tests {
 		let openai = new_test_openai();
 		let body = ChatBody {
 			model: "gpt-3.5-turbo".to_string(),
-			max_tokens: Some(7),
+			max_completion_tokens: Some(7),
 			temperature: Some(0_f32),
 			top_p: Some(0_f32),
 			n: Some(2),
@@ -115,6 +115,35 @@ mod tests {
 			logit_bias: None,
 			user: None,
 			messages: vec![Message { role: Role::User, content: "Hello!".to_string() }],
+		};
+		let rs = openai.chat_completion_create(&body);
+		let choice = rs.unwrap().choices;
+		let message = &choice[0].message.as_ref().unwrap();
+		assert!(message.content.contains("Hello"));
+	}
+
+	#[test]
+	fn test_chat_reasoning_completion() {
+		// OpenAI's API for reasoning models requires:
+		// - temperature=1.0 (which is default when None)
+		// - top_p == None
+		// - max_completion_tokens includes reasoning tokens, often >200 even for simple requests
+		//
+		// The temperature and top_p requirements also cause the test to be non-deterministic
+		let openai = new_test_openai();
+		let body = ChatBody {
+			model: "o1-mini".to_string(),
+			max_completion_tokens: Some(500),
+			temperature: None,
+			top_p: None,
+			n: Some(2),
+			stream: Some(false),
+			stop: None,
+			presence_penalty: None,
+			frequency_penalty: None,
+			logit_bias: None,
+			user: None,
+			messages: vec![Message { role: Role::User, content: "Hello! Don't think deeply, just write 'Hello' then end.".to_string() }],
 		};
 		let rs = openai.chat_completion_create(&body);
 		let choice = rs.unwrap().choices;
